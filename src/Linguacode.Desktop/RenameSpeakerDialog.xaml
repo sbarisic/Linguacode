@@ -1,0 +1,14 @@
+<Window x:Class="Linguacode.Desktop.RenameSpeakerDialog"
+ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ Title="Rename speaker" Width="380" SizeToContent="Height" ResizeMode="NoResize" WindowStartupLocation="CenterOwner"
+ ShowInTaskbar="False" Background="{DynamicResource Recorder.Surface}" Foreground="{DynamicResource Recorder.Text}">
+ <StackPanel Margin="20">
+  <Label Content="Speaker name" Target="{Binding ElementName=NameInput}" Padding="0,0,0,8"/>
+  <TextBox x:Name="NameInput" MaxLength="100" TextChanged="NameChanged" AutomationProperties.Name="Speaker name"/>
+  <TextBlock Text="Applies to this speaker throughout this recording." TextWrapping="Wrap" Margin="0,8,0,16" Foreground="{DynamicResource Recorder.Muted}"/>
+  <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+   <Button x:Name="SaveButton" Content="Save" IsDefault="True" Click="SaveClick"/>
+   <Button Content="Cancel" IsCancel="True" Margin="0"/>
+  </StackPanel>
+ </StackPanel>
+</Window>

@@ -1,0 +1,4 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><AssemblyName>Linguacode.AudioHost</AssemblyName></PropertyGroup>
+  <ItemGroup><ProjectReference Include="../Linguacode.Audio/Linguacode.Audio.csproj" /></ItemGroup>
+</Project>

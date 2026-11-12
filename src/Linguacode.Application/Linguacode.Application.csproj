@@ -1,0 +1,1 @@
+<Project Sdk="Microsoft.NET.Sdk"><ItemGroup><ProjectReference Include="../Linguacode.Audio/Linguacode.Audio.csproj"/><ProjectReference Include="../Linguacode.Storage/Linguacode.Storage.csproj"/><ProjectReference Include="../Linguacode.OpenAI/Linguacode.OpenAI.csproj"/><ProjectReference Include="../Linguacode.LmStudio/Linguacode.LmStudio.csproj"/></ItemGroup></Project>

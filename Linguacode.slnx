@@ -1,0 +1,15 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Linguacode.Application/Linguacode.Application.csproj" />
+    <Project Path="src/Linguacode.Audio/Linguacode.Audio.csproj" />
+    <Project Path="src/Linguacode.AudioHost/Linguacode.AudioHost.csproj" />
+    <Project Path="src/Linguacode.Core/Linguacode.Core.csproj" />
+    <Project Path="src/Linguacode.Desktop/Linguacode.Desktop.csproj" />
+    <Project Path="src/Linguacode.LmStudio/Linguacode.LmStudio.csproj" />
+    <Project Path="src/Linguacode.OpenAI/Linguacode.OpenAI.csproj" />
+    <Project Path="src/Linguacode.Storage/Linguacode.Storage.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Linguacode.Tests/Linguacode.Tests.csproj" />
+  </Folder>
+</Solution>

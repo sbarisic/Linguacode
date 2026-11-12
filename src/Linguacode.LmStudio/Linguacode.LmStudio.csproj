@@ -1,0 +1,1 @@
+<Project Sdk="Microsoft.NET.Sdk"><ItemGroup><ProjectReference Include="../Linguacode.Core/Linguacode.Core.csproj" /><ProjectReference Include="../Linguacode.OpenAI/Linguacode.OpenAI.csproj" /></ItemGroup></Project>
