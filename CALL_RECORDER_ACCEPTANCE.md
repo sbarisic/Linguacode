@@ -7,7 +7,7 @@ Verified locally on Windows x64:
 - Independent solution builds without an AgentSmith project reference or coding-agent runtime.
 - 232 migrated application/audio/provider tests plus 2 standalone identity/dependency tests pass.
 - Managed Python helper tests: 8 passed; streaming recording decoder tests: 5 passed. Synthetic fixtures only; no model download or real inference.
-- Self-contained `artifacts/linguacode-win-x64` package contains `Linguacode.exe`, `Linguacode.AudioHost.exe`, matching audio assemblies, and helper source.
+- Self-contained app output (now `build/Release` through the Visual Studio projects) contains `Linguacode.exe`, `Linguacode.AudioHost.exe`, matching audio assemblies, and helper source.
 - Headless package checks pass with no window shown: device refresh, setup recovery, explicit transcription, formatted summaries, transcript search, waveform/zoom/accessibility/cancellation, replay, close, and export.
 - Headless light/dark/high-contrast previews and normal/minimum size/scaling checks pass. Evidence is in ignored `tests/Linguacode.Tests/TestResults/recorder-ui`.
 - Matching packaged service starts, reads synthetic paired recordings, exports both tracks, and stops. The check ran without elevation (service protocol 4).

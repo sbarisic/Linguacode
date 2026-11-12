@@ -1,10 +1,12 @@
 # Linguacode user guide
 
-Build a Windows x64 folder containing the desktop app, matching audio host, and .NET runtime:
+Open `Linguacode.slnx` in Visual Studio with .NET 10 and the .NET desktop development workload. Set **Linguacode.Desktop** as the startup project and build the solution. F5 runs the app. The complete Windows x64 app, matching audio host, and .NET runtime are in `build/Debug` or `build/Release`.
+
+Equivalent command-line build:
 
 ```powershell
-./publish.ps1
-./artifacts/linguacode-win-x64/Linguacode.exe
+dotnet build ./Linguacode.slnx -c Release
+if ($?) { & ./build/Release/Linguacode.exe }
 ```
 
 The app runs as the current user; administrator rights are not requested. Startup automatically checks the local audio installation and downloads/installs missing or outdated components using the existing managed setup. Existing installations and verified download caches are reused; an up-to-date installation does not reinstall. A visible banner shows setup progress, cancellation, and a Retry action if setup fails. Saved recordings remain usable and recording is available after a failed/cancelled setup; Transcribe and Resume transcription retry preparation automatically. If a shared capture is already active at launch, setup waits until transcription is requested after recording. Custom `--data-dir` is respected. Configure the summary provider under **Settings > Summary agent**.

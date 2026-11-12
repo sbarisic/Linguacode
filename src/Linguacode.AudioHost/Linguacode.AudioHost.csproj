@@ -1,4 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup><OutputType>Exe</OutputType><AssemblyName>Linguacode.AudioHost</AssemblyName></PropertyGroup>
+  <PropertyGroup>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+  </PropertyGroup>
   <ItemGroup><ProjectReference Include="../Linguacode.Audio/Linguacode.Audio.csproj" /></ItemGroup>
+  <Target Name="GetAudioHostRuntimeFiles" Returns="@(AudioHostRuntimeFiles)">
+    <ItemGroup>
+      <!-- The desktop already carries the shared audio dependencies and .NET runtime. -->
+      <AudioHostRuntimeFiles Include="$(TargetDir)$(AssemblyName).*" />
+    </ItemGroup>
+  </Target>
 </Project>

@@ -85,8 +85,7 @@ BenchmarkDotNet.Artifacts/
 # .NET Core
 project.lock.json
 project.fragment.lock.json
-artifacts/
-.artifacts/
+/build/
 
 # ASP.NET Scaffolding
 ScaffoldingReadMe.txt
@@ -427,7 +426,6 @@ FodyWeavers.xsd
 # Official VS Code C# Dev Kit Extension exclusion
 #*.lscache
 
-# Published application and disposable test evidence
-artifacts/
+# Disposable test evidence
 **/__pycache__/
 *.pyc

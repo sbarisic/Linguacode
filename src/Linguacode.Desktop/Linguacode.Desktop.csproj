@@ -2,6 +2,29 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType><TargetFramework>net10.0-windows</TargetFramework><UseWPF>true</UseWPF>
     <AssemblyName>Linguacode</AssemblyName><ApplicationManifest>app.manifest</ApplicationManifest>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+    <OutputPath>$(MSBuildThisFileDirectory)../../build/$(Configuration)/</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+    <!-- Run the copy target even when only the audio host has changed in Visual Studio. -->
+    <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
   </PropertyGroup>
-  <ItemGroup><ProjectReference Include="../Linguacode.Application/Linguacode.Application.csproj" /></ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../Linguacode.Application/Linguacode.Application.csproj" />
+    <ProjectReference Include="../Linguacode.AudioHost/Linguacode.AudioHost.csproj" ReferenceOutputAssembly="false" />
+    <Content Include="../../CALL_RECORDER.md;../../CALL_RECORDER_ACCEPTANCE.md;../../LICENSE"
+             Link="%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+  <Target Name="CopyAudioHost" AfterTargets="CopyFilesToOutputDirectory" Condition="'$(DesignTimeBuild)' != 'true'">
+    <MSBuild Projects="../Linguacode.AudioHost/Linguacode.AudioHost.csproj"
+             Targets="GetAudioHostRuntimeFiles" Properties="Configuration=$(Configuration);Platform=$(Platform)">
+      <Output TaskParameter="TargetOutputs" ItemName="AudioHostRuntimeFiles" />
+    </MSBuild>
+    <Error Condition="'@(AudioHostRuntimeFiles)' == ''" Text="Build Linguacode.AudioHost before assembling the desktop output." />
+    <Copy SourceFiles="@(AudioHostRuntimeFiles)"
+          DestinationFolder="$(OutDir)" SkipUnchangedFiles="true">
+      <Output TaskParameter="CopiedFiles" ItemName="FileWrites" />
+    </Copy>
+  </Target>
 </Project>
