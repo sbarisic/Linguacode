@@ -15,7 +15,7 @@ internal static class LocalAudioProcess
         using var child = WindowsChild.Start(executable, arguments, directory, environment ?? new Dictionary<string, string>
         {
             ["HF_HUB_OFFLINE"] = "1", ["TRANSFORMERS_OFFLINE"] = "1", ["HF_HUB_DISABLE_TELEMETRY"] = "1",
-            ["OPENAI_API_KEY"] = "", ["SMITH_AUDIO_MODEL"] = "", ["PYTHONNOUSERSITE"] = "1"
+            ["OPENAI_API_KEY"] = "", ["SMITH_AUDIO_MODEL"] = "", ["OMP_NUM_THREADS"] = "4"
         });
         using var stop = cancellation.Register(() => { try { child.Stop(); } catch (IOException) { } });
         async Task<string> Read(StreamReader reader, bool events)
@@ -32,7 +32,7 @@ internal static class LocalAudioProcess
                     {
                         if (buffer[i] != '\n') { line.Append(buffer[i]); continue; }
                         var value = JsonNode.Parse(line.ToString()); line.Clear();
-                        if (value?["protocol"]?.GetValue<int>() != 1) throw new UserFacingException("Invalid local audio protocol.");
+                        if (value?["protocol"]?.GetValue<int>() != 3) throw new UserFacingException("Invalid local audio protocol.");
                         if (value["type"]?.ToString() == "progress") progress?.Invoke(value["stage"]?.ToString() ?? "processing");
                     }
             }
@@ -57,7 +57,7 @@ internal static class LocalAudioProcess
             if (child.ExitCode != 0)
                 throw new UserFacingException("Local audio helper failed (exit " + child.ExitCode + "). " +
                     (protocol ? text[^Math.Min(text.Length, 800)..] : error[^Math.Min(error.Length, 1200)..]) +
-                    " If a DLL is missing, install the Microsoft Visual C++ 2015–2022 x64 Redistributable, then run Linguacode.AudioHost audio setup.");
+                    " Rebuild or restore the complete AudioWorker directory if a native library is missing.");
             return text;
         }
         finally
@@ -71,13 +71,13 @@ internal static class LocalAudioProcess
     internal static async Task<JsonObject> Infer(string directory, JsonObject request, Action<string> progress, CancellationToken cancellation)
     {
         using var installationLease = LocalAudioInstallation.Use(directory);
-        var text = await Run(Path.Combine(directory, "env", "Scripts", "python.exe"),
-            ["-I", "-u", Path.Combine(directory, "helper", "audio_helper.py")], directory, request.ToJsonString(), cancellation, progress, true);
+        request = (JsonObject)request.DeepClone(); request["protocol"] = 3;
+        var text = await Run(LocalAudioInstallation.Worker, [], directory, request.ToJsonString(), cancellation, progress, true);
         try
         {
             var messages = text.Split('\n', StringSplitOptions.RemoveEmptyEntries).Select(s => JsonNode.Parse(s)!).ToArray();
             var results = messages.Where(m => m["type"]?.ToString() == "result").ToArray();
-            if (results.Length != 1 || messages.Any(m => m["protocol"]?.GetValue<int>() != 1 || m["type"]?.ToString() is not ("progress" or "result")))
+            if (results.Length != 1 || messages.Any(m => m["protocol"]?.GetValue<int>() != 3 || m["type"]?.ToString() is not ("progress" or "result")))
                 throw new UserFacingException("Local audio helper returned an invalid or incomplete result.");
             var result = results[0]["result"]?.DeepClone().AsObject() ?? throw new UserFacingException("Local audio helper returned no result.");
             Validate(result, request["operation"]!.ToString(), request["components"]?.AsArray().Select(n => n!.ToString()).ToArray());
@@ -109,6 +109,7 @@ internal static class LocalAudioProcess
             if (component["status"]?.ToString() != "succeeded") throw new UserFacingException("Invalid audio component status.");
             if (name == "transcription")
             {
+                if (component["languageScore"] is { } score) Number(score, 0, 1);
                 var segments = component["segments"]!.AsArray();
                 if (segments.Count > 2000) throw new UserFacingException("Too many transcript segments.");
                 foreach (var segment in segments)

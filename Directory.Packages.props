@@ -1,5 +1,11 @@
 <Project><PropertyGroup><ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally></PropertyGroup><ItemGroup>
 <PackageVersion Include="NAudio.Wasapi" Version="3.1.0" />
+<PackageVersion Include="Whisper.net" Version="1.9.1" />
+<PackageVersion Include="Whisper.net.Runtime" Version="1.9.1" />
+<PackageVersion Include="org.k2fsa.sherpa.onnx" Version="1.13.8" />
+<PackageVersion Include="FFmpeg.AutoGen" Version="8.1.0" />
+<PackageVersion Include="SharpCompress" Version="0.50.9" />
+<PackageVersion Include="ThinkGeo.Dependency.MicrosoftVisualCRunTime140" Version="15.0.1" />
 <PackageVersion Include="Microsoft.Data.Sqlite" Version="10.0.12" />
 <PackageVersion Include="System.Security.Cryptography.ProtectedData" Version="10.0.12" />
 <PackageVersion Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.23.0" />

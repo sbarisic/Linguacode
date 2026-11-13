@@ -23,10 +23,9 @@ internal sealed class LocalAudioHost : IDisposable
     internal static readonly IReadOnlyDictionary<string, string> OfflineEnvironment = new Dictionary<string, string>
     {
         ["HF_HUB_OFFLINE"] = "1", ["TRANSFORMERS_OFFLINE"] = "1", ["HF_HUB_DISABLE_TELEMETRY"] = "1",
-        ["OPENAI_API_KEY"] = "", ["SMITH_AUDIO_MODEL"] = "", ["PYTHONNOUSERSITE"] = "1"
+        ["OPENAI_API_KEY"] = "", ["SMITH_AUDIO_MODEL"] = "", ["OMP_NUM_THREADS"] = "4"
     };
-    internal Func<string, WindowsChild> Launch = directory => WindowsChild.Start(Path.Combine(directory, "env", "Scripts", "python.exe"),
-        ["-I", "-u", Path.Combine(directory, "helper", "audio_helper.py"), "--server"], directory, OfflineEnvironment);
+    internal Func<string, WindowsChild> Launch = directory => WindowsChild.Start(LocalAudioInstallation.Worker, ["--server"], directory, OfflineEnvironment);
     internal string State { get { lock (Sync) return child is null ? "unloaded" : active ? "processing" : "warm (unloads after five idle minutes)"; } }
     internal long PeakCommittedBytes
     {
@@ -67,8 +66,7 @@ internal sealed class LocalAudioHost : IDisposable
     {
         using var requestLease = LocalAudioInstallation.Use(directory);
         var manifest = JsonNode.Parse(File.ReadAllText(Path.Combine(directory, "helper", "downloads.json")));
-        if (manifest?["helperProtocol"]?.GetValue<int>() != 2)
-            return await LocalAudioProcess.Infer(directory, request, progress, cancellation);
+        if (manifest?["helperProtocol"]?.GetValue<int>() != 3) throw new UserFacingException("Native audio setup is required.");
         await Gate.WaitAsync(cancellation);
         WindowsChild current;
         try
@@ -99,7 +97,7 @@ internal sealed class LocalAudioHost : IDisposable
             }
             using var cancel = cancellation.Register(() => { try { current.Stop(); } catch (IOException) { } });
             var id = Guid.NewGuid().ToString("N");
-            var input = (JsonObject)request.DeepClone(); input["protocol"] = 2; input["requestId"] = id;
+            var input = (JsonObject)request.DeepClone(); input["protocol"] = 3; input["requestId"] = id;
             var serialized = input.ToJsonString();
             if (Encoding.UTF8.GetByteCount(serialized) > 16384) throw new UserFacingException("Audio request exceeds 16 KiB.");
             await current.Input.WriteLineAsync(serialized.AsMemory(), cancellation);
@@ -110,11 +108,11 @@ internal sealed class LocalAudioHost : IDisposable
                 {
                     cancellation.ThrowIfCancellationRequested();
                     var count = await current.Output.ReadAsync(buffer.AsMemory(), cancellation);
-                    if (count == 0) throw new UserFacingException("Local audio helper exited before completion.");
-                    if (++total > LocalAudioProcess.OutputLimit) throw new UserFacingException("Local audio helper output exceeded 2 MiB.");
+                    if (count == 0) throw new UserFacingException("Local audio worker exited before completion.");
+                    if (++total > LocalAudioProcess.OutputLimit) throw new UserFacingException("Local audio worker output exceeded 2 MiB.");
                     if (buffer[0] != '\n') { line.Append(buffer[0]); continue; }
                     var message = JsonNode.Parse(line.ToString()); line.Clear();
-                    if (message?["protocol"]?.GetValue<int>() != 2 || message["requestId"]?.ToString() != id) throw new UserFacingException("Invalid audio response identity or protocol.");
+                    if (message?["protocol"]?.GetValue<int>() != 3 || message["requestId"]?.ToString() != id) throw new UserFacingException("Invalid audio response identity or protocol.");
                     switch (message["type"]?.ToString())
                     {
                         case "progress": progress(message["stage"]?.ToString() ?? "processing"); break;
@@ -123,7 +121,7 @@ internal sealed class LocalAudioHost : IDisposable
                             if (result is not null) throw new UserFacingException("Duplicate audio result.");
                             result = message["result"]!.DeepClone().AsObject(); break;
                         case "complete": return result ?? throw new UserFacingException("Audio completed without a result.");
-                        case "error": throw new UserFacingException("Local audio helper failed: " + message["error"]);
+                        case "error": throw new UserFacingException("Local audio worker failed: " + message["error"]);
                         default: throw new UserFacingException("Invalid audio response message.");
                     }
                 }
@@ -133,7 +131,7 @@ internal sealed class LocalAudioHost : IDisposable
             return result;
         }
         catch (Exception ex) when (ex is System.Text.Json.JsonException or InvalidOperationException or NullReferenceException or FormatException)
-        { lock (Sync) Stop(); throw new UserFacingException("Local audio helper returned malformed evidence; no result was retained."); }
+        { lock (Sync) Stop(); throw new UserFacingException("Local audio worker returned malformed evidence; no result was retained."); }
         catch { lock (Sync) Stop(); cancellation.ThrowIfCancellationRequested(); throw; }
         finally
         {

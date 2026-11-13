@@ -14,8 +14,7 @@ internal static class AudioReuse
     };
     internal static JsonObject Keys(string installation, string path, string hash, JsonNode args, string[] components)
     {
-        string Read(string name) { var file = Path.Combine(installation, "helper", name); return File.Exists(file) ? File.ReadAllText(file) : "legacy"; }
-        var version = FileOperations.Hash(Encoding.UTF8.GetBytes(Read("audio_helper.py") + Read("requirements.lock") + Read("downloads.json")));
+        var version = LocalAudioInstallation.Fingerprint(Path.Combine(installation, "helper"));
         var keys = new JsonObject();
         foreach (var component in components)
             keys[component] = FileOperations.Hash(Encoding.UTF8.GetBytes(new JsonObject

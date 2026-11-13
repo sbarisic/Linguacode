@@ -1,18 +1,38 @@
-# Linguacode extraction acceptance — 2026-11-12
+# Native audio implementation acceptance — 2026-11-13
 
-Migrated the current AgentSmith recorder working tree, including uncommitted fixes, into Linguacode. The source baseline was AgentSmith `16a9cbe`; this migration is not a checkout of only that commit.
+Implemented on `main`. The application now uses a bundled C# worker with native CPU engines. Setup downloads and verifies models only. Maintained build, test, setup, and runtime paths no longer invoke Python. The original extraction report is preserved in `docs/history/LINGUACODE_EXTRACTION_ACCEPTANCE.md`.
 
-Verified locally on Windows x64:
+## Automated validation
 
-- Independent solution builds without an AgentSmith project reference or coding-agent runtime.
-- 232 migrated application/audio/provider tests plus 2 standalone identity/dependency tests pass.
-- Managed Python helper tests: 8 passed; streaming recording decoder tests: 5 passed. Synthetic fixtures only; no model download or real inference.
-- Self-contained app output (now `build/Release` through the Visual Studio projects) contains `Linguacode.exe`, `Linguacode.AudioHost.exe`, matching audio assemblies, and helper source.
-- Headless package checks pass with no window shown: device refresh, setup recovery, explicit transcription, formatted summaries, transcript search, waveform/zoom/accessibility/cancellation, replay, close, and export.
-- Headless light/dark/high-contrast previews and normal/minimum size/scaling checks pass. Evidence is in ignored `tests/Linguacode.Tests/TestResults/recorder-ui`.
-- Matching packaged service starts, reads synthetic paired recordings, exports both tracks, and stops. The check ran without elevation (service protocol 4).
-- AgentSmith's remaining 490 unit tests and 368 integration tests pass, plus the new audio-removal regression test. One cancellation test failed in the first concurrent run and passed both individually and in the complete unit-suite rerun; no unrelated runtime fix was made.
+- All 258 xUnit tests passed in both Debug and Release, with real-model tests enabled and no skips.
+- Debug and Release Build/Clean/Rebuild succeeded on Windows x64 with .NET SDK 10.0.400.
+- Application and audio-service package smoke checks run in C# through xUnit, covering existing desktop workflows and paired recording exports.
+- Native setup self-tests passed for Whisper, YAMNet, and speaker diarization in isolated Debug and Release data directories.
+- Real-model tests exercise recording preparation and analysis through the audio service, cached results, cancellation of each engine, worker reuse, restart after termination, and idle unloading.
+- Decoder tests cover integer PCM and floating-point WAV, stereo/resampling, VBR MP3 encoder delay and range consistency, long recordings, gaps, malformed inputs, bounds, storage budgets, and atomic output ownership.
+- Old analysis versions are explicitly rejected. Saved Python decoders are never executed. Service protocol is 5; worker protocol is 3; analysis format is 4.
+- The complete worker is copied under `AudioWorker` and removed by Clean. Release output is approximately 1.29 GiB, including TensorFlow and app-local Visual C++ runtime libraries. Keep the complete output directory together.
 
-Reproduce with the commands in [README](README.md). Close Linguacode before overwriting its published binaries.
+## Speech and model comparisons
 
-No live microphone capture, Bluetooth/Teams/VM call, language-accuracy assessment, cloud-provider request, installer, or automatic-update test was performed for this extraction. Historical acceptance is retained under `docs/history`; it is not a claim that those scenarios were rerun here.
+The committed fixtures contain the first twenty FLEURS test utterances for each language, with reference transcripts, checksums, attribution, and CC BY 4.0 licensing. Baselines were captured with the previous implementation before its removal. The initial four-utterance sample was expanded after Croatian narrowly missed the regression limit; no utterances were removed or selected by recognition quality. See `tests/fixtures/speech/README.md` for provenance and reproduction commands.
+
+| Language | Reference words | Previous WER | Native WER | Change |
+|---|---:|---:|---:|---:|
+| English | 440 | 6.82% | 7.05% | +0.23 percentage points |
+| Croatian | 454 | 32.38% | 31.28% | -1.10 percentage points |
+| Slovenian | 349 | 49.28% | 49.28% | 0.00 percentage points |
+
+All three pass the two-percentage-point regression limit. These are small regression samples, and the Croatian and Slovenian absolute error rates remain substantial.
+
+For all sixty utterances, generated silence, and controlled overlapping speech, the complete YAMNet label map and aggregate/window scores passed comparison. Speaker turns and embeddings matched the baseline within 2 ms and 0.0001 respectively; score tolerance is 0.0001. Source-relative word bounds and decoder offsets were checked. Human-annotated word alignment has **not** been validated: the fixtures have reference text but no human word timestamps. The overlap fixture supplies controlled source timing rather than human alignment annotations.
+
+The C# acceptance runner is `tests/Linguacode.Acceptance`. Full local reports and build/test logs are retained under ignored `tests/Linguacode.Tests/TestResults/native`.
+
+## Remaining user acceptance
+
+No VM is required or used. The user will test the application. Physical microphone/loopback capture, listening and word-alignment review, real meeting speaker quality, and live cloud-provider behavior remain unverified in this implementation run.
+
+Launch `build/Release/Linguacode.exe`, complete model setup, and test offline recording, transcription, speaker separation, sound classification, playback, and export. Initial setup needs network access; inference is local afterward. Existing Python-era analyses must be recreated.
+
+Visual Studio solution builds require Visual Studio 2026/MSBuild 18 with .NET 10 support. The installed Visual Studio 2022 cannot build .NET 10 projects, so full IDE/F5 validation remains pending. The native-download inline MSBuild task was separately exercised successfully under both dotnet MSBuild and the installed full-framework MSBuild.

@@ -1,5 +1,6 @@
 using System.Formats.Tar;
 using System.IO.Compression;
+using SharpCompress.Compressors.BZip2;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text.Json.Nodes;
@@ -15,8 +16,9 @@ public sealed record AudioReadiness(bool Transcription, bool Classification, str
 public static partial class LocalAudioInstallation
 {
     public static string Bundle => Path.Combine(AppContext.BaseDirectory, "LocalAudio");
-    internal static string Fingerprint(string bundle) => Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(Path.Combine(bundle, "downloads.json"))
-        .Concat(File.ReadAllBytes(Path.Combine(bundle, "requirements.lock"))).Concat(File.ReadAllBytes(Path.Combine(bundle, "audio_helper.py"))).ToArray()));
+    public static string Worker => Path.Combine(AppContext.BaseDirectory, "AudioWorker", "Linguacode.AudioWorker.exe");
+    internal static string Fingerprint(string bundle) => Convert.ToHexString(SHA256.HashData(
+        File.ReadAllBytes(Path.Combine(bundle, "downloads.json")).Concat(File.ReadAllBytes(Path.ChangeExtension(Worker, ".dll"))).ToArray()));
     public static AudioReadiness Status(string dataDirectory) => Status(dataDirectory, Bundle);
     internal static AudioReadiness Status(string dataDirectory, string bundle)
     {
@@ -25,21 +27,20 @@ public static partial class LocalAudioInstallation
         {
             if (!OperatingSystem.IsWindows() || RuntimeInformation.OSArchitecture != Architecture.X64)
                 return new(false, false, root, "Local audio requires Windows x64.");
-            var missing = MissingPrerequisite();
-            if (missing is not null) return new(false, false, root, missing);
+            if (!File.Exists(Worker)) return new(false, false, root, "The AudioWorker folder is missing. Restore the complete application build.");
             var name = File.ReadAllText(Path.Combine(root, "current")).Trim();
             if (!Guid.TryParseExact(name, "N", out _)) throw new IOException("Invalid installation pointer.");
             var directory = Path.Combine(root, "installations", name);
             var ready = JsonNode.Parse(File.ReadAllText(Path.Combine(directory, "ready.json"))) ?? throw new IOException("Invalid audio readiness record.");
             var update = ready["fingerprint"]?.ToString() != Fingerprint(bundle);
-            var runtime = File.Exists(Path.Combine(directory, "env", "Scripts", "python.exe")) && File.Exists(Path.Combine(directory, "helper", "audio_helper.py"));
-            var whisper = runtime && new[] { "model.bin", "config.json", "tokenizer.json", "vocabulary.txt" }.All(n => File.Exists(Path.Combine(directory, "models", "whisper", n)));
+            var runtime = !update && JsonNode.Parse(File.ReadAllText(Path.Combine(directory, "helper", "downloads.json")))?["helperProtocol"]?.GetValue<int>() == 3;
+            var whisper = runtime && new[] { "ggml-small-q8_0.bin", "ggml-silero-v6.2.0.bin" }.All(n => File.Exists(Path.Combine(directory, "models", "whisper", n)));
             var yamnet = runtime && new[] { "saved_model.pb", "assets/yamnet_class_map.csv", "variables/variables.index", "variables/variables.data-00000-of-00001" }.All(n => File.Exists(Path.Combine(directory, "models", "yamnet", n)));
             var diarization = runtime && new[] { "model.onnx", "nemo_en_titanet_small.onnx" }.All(n => File.Exists(Path.Combine(directory, "models", "diarization", n)));
             return new(whisper, yamnet, directory,
-                $"Whisper small multilingual / faster-whisper 1.2.1 / CPU INT8: {(whisper ? "ready" : "missing files")}\nYAMNet 1 / TensorFlow CPU 2.20.0 / 521 classes: {(yamnet ? "ready" : "missing files")}\nLocation: {directory}" +
+                $"Whisper small multilingual / Whisper.net 1.9.1 / CPU Q8_0: {(whisper ? "ready" : "missing files")}\nYAMNet 1 / TensorFlow C 2.18.1 / 521 classes: {(yamnet ? "ready" : "missing files")}\nLocation: {directory}" +
                 (whisper && yamnet ? "\nInference is local and offline. Returned text and labels may enter your chat provider's context." : "\nRun Linguacode.AudioHost audio setup.") +
-                (update ? "\nA newer bundled helper is available; run Linguacode.AudioHost audio setup. The previous installation remains usable." : "") +
+                (update ? "\nThe bundled native engines or model manifest changed; run Linguacode.AudioHost audio setup. Run setup before processing." : "") +
                 $"\nSpeaker separation / sherpa-onnx 1.13.8: {(diarization ? "ready" : "unavailable; run Linguacode.AudioHost audio setup")}", diarization);
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or System.Text.Json.JsonException or InvalidOperationException)
@@ -49,24 +50,15 @@ public static partial class LocalAudioInstallation
     public static async Task Setup(string dataDirectory, Action<string> progress, CancellationToken cancellation)
     {
         using var http = new HttpClient { Timeout = TimeSpan.FromMinutes(20) };
-        if (MissingPrerequisite() is { } missing) throw new UserFacingException(missing);
+        if (!File.Exists(Worker)) throw new UserFacingException("The AudioWorker folder is missing. Restore the complete application build.");
         try
         {
-            await Setup(dataDirectory, progress, cancellation, Bundle, http,
-                (exe, args, cwd, env, ct) => LocalAudioProcess.Run(exe, args, cwd, null, ct, environment: env), LocalAudioProcess.Infer);
+            await Setup(dataDirectory, progress, cancellation, Bundle, http, LocalAudioProcess.Infer);
         }
         catch (Exception ex) when (ex is IOException or HttpRequestException or UnauthorizedAccessException)
         { throw new UserFacingException("Local audio setup failed: " + ex.Message + " Previous installation retained. Inspect Linguacode.AudioHost audio status, then retry Linguacode.AudioHost audio setup."); }
     }
-    private static string? MissingPrerequisite()
-    {
-        foreach (var dll in new[] { "vcruntime140.dll", "msvcp140.dll", "msvcp140_1.dll" })
-            if (OperatingSystem.IsWindows() && !File.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), dll)))
-                return "Missing native runtime " + dll + ". Install Microsoft Visual C++ 2015–2022 x64 Redistributable (https://aka.ms/vs/17/release/vc_redist.x64.exe), then run Linguacode.AudioHost audio setup.";
-        return null;
-    }
     internal static async Task Setup(string dataDirectory, Action<string> progress, CancellationToken cancellation, string bundle, HttpClient http,
-        Func<string, string[], string, IReadOnlyDictionary<string, string>, CancellationToken, Task<string>> command,
         Func<string, JsonObject, Action<string>, CancellationToken, Task<JsonObject>> infer)
     {
         if (!OperatingSystem.IsWindows() || RuntimeInformation.OSArchitecture != Architecture.X64)
@@ -110,9 +102,7 @@ public static partial class LocalAudioInstallation
                 }
                 files[name] = cached;
             }
-            progress("Installing private Python 3.11.14 and uv 0.9.5");
-            ZipFile.ExtractToDirectory(files["uv.zip"], Path.Combine(directory, "uv"));
-            ExtractTar(files["python.tar.gz"], Path.Combine(directory, "runtime"));
+            progress("Installing verified local models");
             var models = Path.Combine(directory, "models"); Directory.CreateDirectory(Path.Combine(models, "whisper"));
             ExtractTar(files["yamnet.tar.gz"], Path.Combine(models, "yamnet"));
             foreach (var file in files.Where(f => f.Key.StartsWith("whisper/", StringComparison.Ordinal)))
@@ -120,25 +110,35 @@ public static partial class LocalAudioInstallation
             if (!await Matches(Path.Combine(models, "yamnet", "assets", "yamnet_class_map.csv"), manifest["classMapSha256"]!.ToString(), null, cancellation))
                 throw new IOException("YAMNet class map checksum mismatch.");
             var helper = Path.Combine(directory, "helper"); Directory.CreateDirectory(helper);
-            foreach (var name in new[] { "audio_helper.py", "requirements.lock", "downloads.json" }) File.Copy(Path.Combine(bundle, name), Path.Combine(helper, name));
-            var uv = Directory.GetFiles(Path.Combine(directory, "uv"), "uv.exe", SearchOption.AllDirectories).Single();
-            var environment = new Dictionary<string, string> { ["UV_CACHE_DIR"] = Path.Combine(root, "cache"), ["UV_PYTHON_INSTALL_DIR"] = Path.Combine(root, "python"), ["UV_NO_PROGRESS"] = "1" };
-            await command(uv, ["--no-config", "venv", "--no-python-downloads", "--python", Path.Combine(directory, "runtime", "python", "python.exe"), Path.Combine(directory, "env")], directory, environment, cancellation);
-            progress("Installing hash-locked Windows dependencies");
-            await command(uv, ["--no-config", "pip", "sync", Path.Combine(helper, "requirements.lock"), "--python", Path.Combine(directory, "env", "Scripts", "python.exe"), "--require-hashes", "--only-binary", ":all:", "--index-url", "https://pypi.org/simple"], directory, environment, cancellation);
+            File.Copy(Path.Combine(bundle, "downloads.json"), Path.Combine(helper, "downloads.json"));
             if (files.TryGetValue("segmentation.tar.bz2", out var segmentation))
             {
                 var speakers = Path.Combine(models, "diarization"); Directory.CreateDirectory(speakers);
                 File.Copy(files["diarization/nemo_en_titanet_small.onnx"], Path.Combine(speakers, "nemo_en_titanet_small.onnx"));
-                await command(Path.Combine(directory, "env", "Scripts", "python.exe"), ["-I", Path.Combine(helper, "audio_helper.py"), "--install-segmentation", segmentation, speakers], directory, LocalAudioHost.OfflineEnvironment, cancellation);
+                using var compressed = File.OpenRead(segmentation);
+                using var decompressed = BZip2Stream.Create(compressed, SharpCompress.Compressors.CompressionMode.Decompress, false);
+                using var tar = new TarReader(decompressed);
+                TarEntry? entry;
+                var found = new HashSet<string>();
+                while ((entry = tar.GetNextEntry()) is not null)
+                {
+                    var name = Path.GetFileName(entry.Name);
+                    if (name is not ("model.onnx" or "LICENSE" or "README.md")) continue;
+                    if (entry.EntryType is not (TarEntryType.RegularFile or TarEntryType.V7RegularFile) || entry.Length > 16 * 1024 * 1024 || !found.Add(name))
+                        throw new IOException("Invalid segmentation archive member.");
+                    entry.ExtractToFile(Path.Combine(speakers, name), false);
+                }
+                if (!found.Contains("model.onnx")) throw new IOException("Segmentation archive has no model.");
             }
             progress("Running offline self-tests for installed engines");
             using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellation); timeout.CancelAfter(TimeSpan.FromMinutes(5));
-            var result = await infer(directory, new() { ["protocol"] = 1, ["operation"] = "selftest", ["models"] = models }, progress, timeout.Token);
+            var result = await infer(directory, new() { ["protocol"] = 3, ["operation"] = "selftest", ["models"] = models }, progress, timeout.Token);
             if (result["transcription"]?["status"]?.ToString() != "succeeded" || result["classification"]?["status"]?.ToString() != "succeeded" || manifest["diarization"] is not null && result["diarization"]?["status"]?.ToString() != "succeeded")
-                throw new IOException("Audio self-test failed: " + result.ToJsonString()[..Math.Min(1800, result.ToJsonString().Length)]);
+                throw new IOException("Audio self-test failed: " + string.Join("; ", new[] { "transcription", "classification", "diarization" }
+                    .Where(name => result[name]?["status"]?.ToString() != "succeeded")
+                    .Select(name => name + ": " + result[name]?["error"])));
             await File.WriteAllTextAsync(Path.Combine(directory, "ready.json"), Json.Serialize(new { fingerprint = Fingerprint(bundle), installedAt = DateTimeOffset.UtcNow }), cancellation);
-            // Generation paths never move: venv and SavedModel asset paths remain valid.
+            // Generation paths never move: SavedModel asset paths remain valid.
             var pointer = Path.Combine(root, "current.new"); await File.WriteAllTextAsync(pointer, id, cancellation);
             File.Move(pointer, Path.Combine(root, "current"), true);
             File.Delete(Path.Combine(root, "last-error.txt"));

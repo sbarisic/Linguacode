@@ -1,0 +1,52 @@
+ThinkGeo.Dependency.MicrosoftVisualCRunTime140
+==============================================
+
+This package contains two kinds of artifacts that are licensed differently.
+
+----------------------------------------------------------------------
+1. Microsoft Visual C++ v14 Runtime DLLs
+----------------------------------------------------------------------
+
+The DLLs under runtimes/<rid>/native/ — including but not limited to
+vcruntime140.dll, vcruntime140_1.dll, msvcp140.dll, msvcp140_1.dll,
+msvcp140_2.dll, concrt140.dll, and vccorlib140.dll — are unmodified
+binaries from the Microsoft Visual Studio 2026 Visual C++ v14
+redistributable package (14.51.36247.0),
+copyright (c) Microsoft Corporation. All rights reserved.
+
+Redistribution of these DLLs is governed by the Microsoft Visual Studio
+2026 Visual C++ v14 Redistributable license terms, available at:
+
+    https://visualstudio.microsoft.com/license-terms/vs2026-ga-visualcpp-v14-redist-runtime/
+
+By using this NuGet package you also agree to the Microsoft license
+terms above with respect to the redistributed DLLs.
+
+----------------------------------------------------------------------
+2. Packaging code (build/*.targets, .nuspec, etc.)
+----------------------------------------------------------------------
+
+The MSBuild .targets file and packaging metadata authored by ThinkGeo
+LLC are released under the MIT License:
+
+    Copyright (c) ThinkGeo LLC
+
+    Permission is hereby granted, free of charge, to any person
+    obtaining a copy of this software and associated documentation
+    files (the "Software"), to deal in the Software without
+    restriction, including without limitation the rights to use, copy,
+    modify, merge, publish, distribute, sublicense, and/or sell copies
+    of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be
+    included in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+    EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+    NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+    BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+    ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+    CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.

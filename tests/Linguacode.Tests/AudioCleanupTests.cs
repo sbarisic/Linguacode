@@ -118,7 +118,7 @@ public sealed class AudioCleanupTests
     public void PairedRecordingJobsUseTheSameGenerationRetentionRules(string state, bool retained)
     {
         using var f = new Fixture(); var old = f.Generation(); var job = f.Job(old, state);
-        job.Version = 2; job.TrackCount = 2; f.Store.Save(job);
+        job.Version = 4; job.TrackCount = 2; f.Store.Save(job);
         LocalAudioInstallation.Cleanup(f.Data);
         Assert.Equal(retained, Directory.Exists(old));
         Assert.Equal(state, f.Store.Read(job.Id).State);

@@ -153,7 +153,7 @@ public sealed partial class AudioServiceHost
         if (fingerprint != submission.Fingerprint || readyRecord?["fingerprint"]?.ToString() != fingerprint)
             throw new UserFacingException("Audio installation generation changed or is incompatible. Run Linguacode.AudioHost audio setup and request analysis again.");
         var protocol = JsonNode.Parse(File.ReadAllText(Path.Combine(helperDirectory, "downloads.json")))?["helperProtocol"]?.GetValue<int>() ?? 1;
-        if (protocol is not (1 or 2)) throw new UserFacingException("Unsupported helper generation. Run Linguacode.AudioHost audio setup.");
+        if (protocol != 3) throw new UserFacingException("Unsupported native worker generation. Run Linguacode.AudioHost audio setup.");
         return directory;
     }
     private static void Validate(AudioSubmission s)
@@ -186,7 +186,7 @@ public sealed partial class AudioServiceHost
                     var queueSeconds = job.ReadyAt.Elapsed.TotalSeconds;
                     var request = new JsonObject
                     {
-                        ["protocol"] = 1, ["path"] = job.Path, ["models"] = Path.Combine(job.Installation, "models"),
+                        ["protocol"] = 3, ["path"] = job.Path, ["models"] = Path.Combine(job.Installation, "models"),
                         ["operation"] = job.Submission.Operation, ["startSeconds"] = job.Submission.StartSeconds,
                         ["durationSeconds"] = job.Submission.DurationSeconds, ["language"] = job.Submission.Language,
                         ["transcriptionHints"] = job.Submission.TranscriptionHints,

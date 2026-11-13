@@ -1,0 +1,506 @@
+{
+  "dataset": "google/fleurs",
+  "license": "CC-BY-4.0",
+  "split": "test",
+  "selection": "first twenty rows per language, no selection by model output",
+  "entries": [
+    {
+      "file": "en_us-0.wav",
+      "language": "en",
+      "transcript": "however due to the slow communication channels styles in the west could lag behind by 25 to 30 year",
+      "rawTranscript": "However, due to the slow communication channels, styles in the west could lag behind by 25 to 30 year.",
+      "id": 1904,
+      "sha256": "33aca50159ec2e3cbcc894eb26faa916d6badb1b49fb75994973561540a7f012"
+    },
+    {
+      "file": "en_us-1.wav",
+      "language": "en",
+      "transcript": "all nouns alongside the word sie for you always begin with a capital letter even in the middle of a sentence",
+      "rawTranscript": "All nouns, alongside the word Sie for you, always begin with a capital letter, even in the middle of a sentence.",
+      "id": 1675,
+      "sha256": "7603cae3294309ef70d234180cefccc3b13865ee525262228a636069b9b62841"
+    },
+    {
+      "file": "en_us-2.wav",
+      "language": "en",
+      "transcript": "to the north and within easy reach is the romantic and fascinating town of sintra and which was made famous to foreigners after a glowing account of its splendours recorded by lord byron",
+      "rawTranscript": "To the north and within easy reach is the romantic and fascinating town of Sintra and which was made famous to foreigners after a glowing account of its splendours recorded by Lord Byron.",
+      "id": 1950,
+      "sha256": "260bdd1a15e1d35bcc5d91667516ca3bc659285e10f94872182715bcd7880398"
+    },
+    {
+      "file": "en_us-3.wav",
+      "language": "en",
+      "transcript": "the cabbage juice changes color depending on how acidic or basic alkaline the chemical is",
+      "rawTranscript": "The cabbage juice changes color depending on how acidic or basic (alkaline) the chemical is.",
+      "id": 1728,
+      "sha256": "b174be7730f0aab6a26762130b66f2125392b50550645727bd057d8479fb6219"
+    },
+    {
+      "file": "en_us-4.wav",
+      "language": "en",
+      "transcript": "many people don't think about them as dinosaurs because they have feathers and can fly",
+      "rawTranscript": "Many people don't think about them as dinosaurs because they have feathers and can fly.",
+      "id": 1972,
+      "sha256": "bfa2f3fb72a05cbcb7c0000a460435f2d0eedca7c5cc90f01aacc89127df7f63"
+    },
+    {
+      "file": "en_us-5.wav",
+      "language": "en",
+      "transcript": "the hospital has followed protocol for infection control including separating the patient from others to prevent possible infection of others",
+      "rawTranscript": "The hospital has followed protocol for infection control, including separating the patient from others to prevent possible infection of others.",
+      "id": 1938,
+      "sha256": "3802ffc3e69c66e0d2e66652015bff0c6b1b8498bfb8670623eb4e34bc9e008d"
+    },
+    {
+      "file": "en_us-6.wav",
+      "language": "en",
+      "transcript": "the northern marianas emergency management office said that there were no damages reported in the nation",
+      "rawTranscript": "The Northern Marianas emergency management office said that there were no damages reported in the nation.",
+      "id": 1876,
+      "sha256": "6b3081a29a5bb6fc6434e8525690edc26b23844841e119c916183f4ba1863372"
+    },
+    {
+      "file": "en_us-7.wav",
+      "language": "en",
+      "transcript": "twentieth century research has shown that there are two pools of genetic variation hidden and expressed",
+      "rawTranscript": "Twentieth century research has shown that there are two pools of genetic variation: hidden and expressed.",
+      "id": 1914,
+      "sha256": "14c9f40d7087ed487823917a9bc1838a037d78d315a694f7ace632651c612a61"
+    },
+    {
+      "file": "en_us-8.wav",
+      "language": "en",
+      "transcript": "the aspect ratio of this format dividing by twelve to obtain the simplest whole-number ratio is therefore said to be 3:2",
+      "rawTranscript": "The aspect ratio of this format (dividing by twelve to obtain the simplest whole-number ratio) is therefore said to be 3:2.",
+      "id": 1846,
+      "sha256": "8152d901627ad1bb88fee68b1f3adb706e33d2292bca02ef4d92465e2db4c84f"
+    },
+    {
+      "file": "en_us-9.wav",
+      "language": "en",
+      "transcript": "as light pollution in their heyday was not the kind of problem it is today they are usually located in cities or at campuses easier to reach than those built in modern times",
+      "rawTranscript": "As light pollution in their heyday was not the kind of problem it is today, they are usually located in cities or at campuses, easier to reach than those built in modern times.",
+      "id": 1806,
+      "sha256": "9514bffb9e0bd3397f2cf90041eff51b87e68293335f7ff904515a19f8d416e3"
+    },
+    {
+      "file": "en_us-10.wav",
+      "language": "en",
+      "transcript": "through the night between 150 and 200 copies were made now known as dunlap broadsides",
+      "rawTranscript": "Through the night between 150 and 200 copies were made, now known as \"Dunlap broadsides\".",
+      "id": 1776,
+      "sha256": "0471eb4c8306e143524c09a45c2b4137204ac2a19fc7ed896ed8391ac864347c"
+    },
+    {
+      "file": "en_us-11.wav",
+      "language": "en",
+      "transcript": "for example each year students from bennet school in north carolina design a website about their trip to the state capital each year the website gets remodeled but old versions are kept online to serve as a scrapbook",
+      "rawTranscript": "For example, each year students from Bennet School in North Carolina design a website about their trip to the State Capital, each year the website gets remodeled, but old versions are kept online to serve as a scrapbook.",
+      "id": 1729,
+      "sha256": "76e349546fc73bf40326c0ac33d62b87ffe7b5455afd825f431494e2f7690a8c"
+    },
+    {
+      "file": "en_us-12.wav",
+      "language": "en",
+      "transcript": "lion prides act much like packs of wolves or dogs animals surprisingly similar to lions but not other big cats in behavior and also very deadly to their prey",
+      "rawTranscript": "Lion prides act much like packs of wolves or dogs, animals surprisingly similar to lions (but not other big cats) in behavior, and also very deadly to their prey.",
+      "id": 1855,
+      "sha256": "cd878b528dca67fdf3754d07a5d43c64dc3577e2105966ba529267d35dc5968b"
+    },
+    {
+      "file": "en_us-13.wav",
+      "language": "en",
+      "transcript": "the city is also the base to climb the nyiragongo volcano along with some of the cheapest mountain gorilla tracking in africa",
+      "rawTranscript": "The city is also the base to climb the Nyiragongo volcano along with some of the cheapest Mountain Gorilla tracking in Africa.",
+      "id": 1919,
+      "sha256": "f93693f080704373d85c2761a4fe12c2a2a4a6ea721576c5c3bf4226dfefa44c"
+    },
+    {
+      "file": "en_us-14.wav",
+      "language": "en",
+      "transcript": "the internet combines elements of both mass and interpersonal communication",
+      "rawTranscript": "The Internet combines elements of both mass and interpersonal communication.",
+      "id": 1802,
+      "sha256": "80c74220cd80f918367c517e5ddff1ea9b2d366b7711b83a276a828564cfcc49"
+    },
+    {
+      "file": "en_us-15.wav",
+      "language": "en",
+      "transcript": "these theories look at what it is about certain people that make them want the things that they do and what things in their environment will make them do or not do certain things",
+      "rawTranscript": "These theories look at what it is about certain people that make them want the things that they do and what things in their environment will make them do or not do certain things.",
+      "id": 1711,
+      "sha256": "8c5d2b4634bab071370c4d03aca8134cdc25dc256f7409fe872dc82803d3b4c7"
+    },
+    {
+      "file": "en_us-16.wav",
+      "language": "en",
+      "transcript": "for example the most common still image photography format in the world is 35mm which was the dominant film size at the close of the analog film era",
+      "rawTranscript": "For example, the most common still image photography format in the world is 35mm, which was the dominant film size at the close of the analog film era.",
+      "id": 1685,
+      "sha256": "b32ac05d6df3e023930ff5687e27634e5ca78a44474437e634a794158654a4de"
+    },
+    {
+      "file": "en_us-17.wav",
+      "language": "en",
+      "transcript": "the term safari in popular use refers to overland travel to view the stunning african wildlife particularly on savanna",
+      "rawTranscript": "The term safari in popular use refers to overland travel to view the stunning African wildlife, particularly on savanna.",
+      "id": 1992,
+      "sha256": "32bafaf58802bef28cbde443d173e51c0afe7c58c8260cb0f5776e2c60a2a3a5"
+    },
+    {
+      "file": "en_us-18.wav",
+      "language": "en",
+      "transcript": "but there are a lot of things about birds that still look like a dinosaur",
+      "rawTranscript": "But there are a lot of things about birds that still look like a dinosaur.",
+      "id": 2005,
+      "sha256": "5a56cbc0ec373f9873b762d79e8b6874c889ba07e2bd195c40098e84bd170f5e"
+    },
+    {
+      "file": "en_us-19.wav",
+      "language": "en",
+      "transcript": "women it is recommended that any women travellers say that they are married regardless of actual marital status",
+      "rawTranscript": "Women: It is recommended that any women travellers say that they are married, regardless of actual marital status.",
+      "id": 1982,
+      "sha256": "6ba50cd176389e65cafd4172d0f6b9849dd12ee2962ee3b0f224bbf55e4a2365"
+    },
+    {
+      "file": "hr_hr-0.wav",
+      "language": "hr",
+      "transcript": "tijekom noći izrađeno je između 150 i 200 kopija koje su sada poznate pod nazivom dunlap broadsides",
+      "rawTranscript": "Tijekom noći izrađeno je između 150 i 200 kopija koje su sada poznate pod nazivom „Dunlap broadsides“.",
+      "id": 1776,
+      "sha256": "73c9e5a2e922930cf2bf549fc289a965ad9c10299261c92cc7ddd8b5d389c0ca"
+    },
+    {
+      "file": "hr_hr-1.wav",
+      "language": "hr",
+      "transcript": "iako se pokazalo da jedno eksperimentalno cjepivo može smanjiti smrtnost od ebole dosad nijedan lijek nije dokazano prikladan za liječenje postojeće infekcije",
+      "rawTranscript": "Iako se pokazalo da jedno eksperimentalno cjepivo može smanjiti smrtnost od ebole, dosad nijedan lijek nije dokazano prikladan za liječenje postojeće infekcije.",
+      "id": 1812,
+      "sha256": "82484be1f337a705fedaf4e7ba1364b8f03d2257ee0a300ad3494a1128c61a9e"
+    },
+    {
+      "file": "hr_hr-2.wav",
+      "language": "hr",
+      "transcript": "arhipelag se nalazi 120 km sjeverno od poluotoka najveći je otok king george na kojem je smješteno naselje villa las estrellas",
+      "rawTranscript": "Arhipelag se nalazi 120 km sjeverno od poluotoka. Najveći je otok King George na kojem je smješteno naselje Villa Las Estrellas.",
+      "id": 1758,
+      "sha256": "3f914dc28b2724613e227f39a309ecd5f6bd0156f5e132550085d3f0110763ab"
+    },
+    {
+      "file": "hr_hr-3.wav",
+      "language": "hr",
+      "transcript": "institut za pravdu i demokraciju na haitiju referirao se na nezavisna istraživanja koja upućuju na to da su pripadnici mirovnih snaga un-a iz nepala nesvjesno prenijeli bolest na haiti",
+      "rawTranscript": "Institut za pravdu i demokraciju na Haitiju referirao se na nezavisna istraživanja koja upućuju na to da su pripadnici mirovnih snaga UN-a iz Nepala nesvjesno prenijeli bolest na Haiti.",
+      "id": 1804,
+      "sha256": "c3c04fc048366e42e7798f075bf209bd7ceb28e2e14755bd0bb58a23458bfe35"
+    },
+    {
+      "file": "hr_hr-4.wav",
+      "language": "hr",
+      "transcript": "fotografi su kasnije zauzeli mjesto starije žene koja je morala na toalet mendoza je upucan",
+      "rawTranscript": "Fotografi su kasnije zauzeli mjesto starije žene koja je morala na toalet. Mendoza je upucan.",
+      "id": 1761,
+      "sha256": "302829c6c7d5af9197cc0136bf77db999ca3b784634ab0e5b070c7b1b60c0744"
+    },
+    {
+      "file": "hr_hr-5.wav",
+      "language": "hr",
+      "transcript": "toplina špilja nije tako ujednačena kao kod velikih špilja na zemlji koje često održavaju poprilično stalnu temperaturu već je dosljedna s obzirom na to da su to veliki otvori u tlu” kaže glen cushing iz astrogeološkog tima američkog geološkog zavoda usgs i sveučilišta sjeverna arizona koje se nalazi u flagstaffu u arizoni",
+      "rawTranscript": "Toplina špilja nije tako ujednačena kao kod velikih špilja na Zemlji koje često održavaju poprilično stalnu temperaturu, već je dosljedna s obzirom na to da su to veliki otvori u tlu”, kaže Glen Cushing iz astrogeološkog tima Američkog geološkog zavoda (USGS) i Sveučilišta Sjeverna Arizona koje se nalazi u Flagstaffu u Arizoni.",
+      "id": 1670,
+      "sha256": "8119cde145fa46deacd076f2cdb37f896f576f68c1bd4ec7460aa9e097f78fbd"
+    },
+    {
+      "file": "hr_hr-6.wav",
+      "language": "hr",
+      "transcript": "nemojte nagrditi mjesto slikanim ili urezbarenim grafitima u postojeće strukture",
+      "rawTranscript": "Nemojte nagrditi mjesto slikanim ili urezbarenim grafitima u postojeće strukture.",
+      "id": 1791,
+      "sha256": "a21e0c1c9880b649abc3614a19b7e3a2fd7f613c5b182dab9c4483ad0cfb3437"
+    },
+    {
+      "file": "hr_hr-7.wav",
+      "language": "hr",
+      "transcript": "krstarenja sankt peterburgom uključuju vrijeme provedeno u gradu. putnici na krstarenju ne moraju imati vizu provjerite uvjete",
+      "rawTranscript": "Krstarenja Sankt Peterburgom uključuju vrijeme provedeno u gradu. Putnici na krstarenju ne moraju imati vizu (provjerite uvjete).",
+      "id": 1865,
+      "sha256": "3af2967b8657f6c74fc247d7af797162a145164ff0991ff63d955c89ffe7d8c6"
+    },
+    {
+      "file": "hr_hr-8.wav",
+      "language": "hr",
+      "transcript": "to će igračima omogućiti da kontroliraju radnje i kretanje u videoigrama pomicanjem uređaja po zraku",
+      "rawTranscript": "To će igračima omogućiti da kontroliraju radnje i kretanje u videoigrama pomicanjem uređaja po zraku.",
+      "id": 2002,
+      "sha256": "fa9485041f95e6a7c1c2aec41e4ff8dee50d71e7eae72aa01b84718d2f639782"
+    },
+    {
+      "file": "hr_hr-9.wav",
+      "language": "hr",
+      "transcript": "on [wales] nam je načelno lagao od samog početka. prvo se pravio da za to postoje pravni razlozi. a zatim se pravio da nas sluša sve do samog brisanja fotografija.",
+      "rawTranscript": "„On [Wales] nam je načelno lagao od samog početka. Prvo se pravio da za to postoje pravni razlozi. A zatim se pravio da nas sluša, sve do samog brisanja fotografija.“",
+      "id": 1898,
+      "sha256": "e38bf422c274e31b73f2b0e207056c6ded8c35bee4c6922269ed9af4f34c84d0"
+    },
+    {
+      "file": "hr_hr-10.wav",
+      "language": "hr",
+      "transcript": "masovno vlasništvo nad automobilima vodi većem broj nesreća na cestama što dovodi do otkrića novih tehnika u zdravstvenoj skrbi za liječenje ozljeda",
+      "rawTranscript": "Masovno vlasništvo nad automobilima vodi većem broj nesreća na cestama, što dovodi do otkrića novih tehnika u zdravstvenoj skrbi za liječenje ozljeda.",
+      "id": 1984,
+      "sha256": "1eb2908493e6f9e2232aad83dd32b4fe6ed85287932366d59a3d3b87efb5ee25"
+    },
+    {
+      "file": "hr_hr-11.wav",
+      "language": "hr",
+      "transcript": "odlučno odbijajte muškarce i nemojte se bojati zauzeti za sebe to nije u redu bez obzira na kulturološke razlike!",
+      "rawTranscript": "Odlučno odbijajte muškarce i nemojte se bojati zauzeti za sebe (to nije u redu bez obzira na kulturološke razlike!).",
+      "id": 1873,
+      "sha256": "8b008d7422cbe686eb50ab027fb0b70fe190a9c46ac2f905e1ba32c59d7807b1"
+    },
+    {
+      "file": "hr_hr-12.wav",
+      "language": "hr",
+      "transcript": "ljudi možda ne očekuju da su kod povratka putnika svome domu nužni strpljenje i razumijevanje",
+      "rawTranscript": "Ljudi možda ne očekuju da su kod povratka putnika svome domu nužni strpljenje i razumijevanje.",
+      "id": 1818,
+      "sha256": "e20bd2b35189b47e298e2a7a2474703f60683e57da458b010e94ae056ae4f8ed"
+    },
+    {
+      "file": "hr_hr-13.wav",
+      "language": "hr",
+      "transcript": "nije izdano upozorenje za cunami a prema agenciji za geofiziku iz jakarte upozorenje za cunami neće se ni izdati jer potres nije zadovoljio uvjet o jakosti magnitude 6,5",
+      "rawTranscript": "Nije izdano upozorenje za cunami, a prema Agenciji za geofiziku iz Jakarte, upozorenje za cunami neće se ni izdati jer potres nije zadovoljio uvjet o jakosti magnitude 6,5.",
+      "id": 1835,
+      "sha256": "c41a9102596942484dff214e42f457bffd977e49869b87251752466ad675a08b"
+    },
+    {
+      "file": "hr_hr-14.wav",
+      "language": "hr",
+      "transcript": "\"prikladna upotreba blogova \"može učenike potaknuti na analitičko i kritičko promišljanje; aktivnim reagiranjem na materijale s interneta učenici mogu definirati svoje stajalište u kontekstu tuđih napisa te iznijeti vlastitu perspektivu o određenim pitanjima oravec 2002.",
+      "rawTranscript": "\"Prikladna upotreba blogova \"\"može učenike potaknuti na analitičko i kritičko promišljanje; aktivnim reagiranjem na materijale s interneta učenici mogu definirati svoje stajalište u kontekstu tuđih napisa te iznijeti vlastitu perspektivu o određenim pitanjima (Oravec, 2002).\"",
+      "id": 1852,
+      "sha256": "1984876d0a365802008c9f0d6b4a980fd55680def7a73d6af018c934d03ba010"
+    },
+    {
+      "file": "hr_hr-15.wav",
+      "language": "hr",
+      "transcript": "djeca se smještaju u sustav udomiteljstva iz različitih razloga od zanemarivanja do zlostavljanja pa čak i iznude",
+      "rawTranscript": "Djeca se smještaju u sustav udomiteljstva iz različitih razloga, od zanemarivanja do zlostavljanja, pa čak i iznude.",
+      "id": 1694,
+      "sha256": "5fe4dcff8909c955fc87b92d432ac70f46d7adacbe256b2a67e0f3510d8c27a5"
+    },
+    {
+      "file": "hr_hr-16.wav",
+      "language": "hr",
+      "transcript": "visina slobodnog prolaza ispod mosta iznosi 15 metara gradnja je dovršena u kolovozu 2011 a most je otvoren za promet u ožujku 2017",
+      "rawTranscript": "Visina slobodnog prolaza ispod mosta iznosi 15 metara. Gradnja je dovršena u kolovozu 2011., a most je otvoren za promet u ožujku 2017.",
+      "id": 1883,
+      "sha256": "89f5424fc0772706906b0836a35d2e0bb85b198b508b463d17ef501a7b0070db"
+    },
+    {
+      "file": "hr_hr-17.wav",
+      "language": "hr",
+      "transcript": "koze su prvi put pripitomljene prije otprilike 10.000 godina u planinama zagros u iranu",
+      "rawTranscript": "Koze su prvi put pripitomljene prije otprilike 10.000 godina u planinama Zagros u Iranu.",
+      "id": 1701,
+      "sha256": "8340ee3c498f06db59831589ed8adc613bc102771ff37938b80bd6551d58164f"
+    },
+    {
+      "file": "hr_hr-18.wav",
+      "language": "hr",
+      "transcript": "još postoji velik broj muškaraca i žena koji su to preživjeli kao i onih čiji su bližnji tamo ubijeni ili radili do smrti bilo židovi ili ne",
+      "rawTranscript": "Još postoji velik broj muškaraca i žena koji su to preživjeli, kao i onih čiji su bližnji tamo ubijeni ili radili do smrti, bilo Židovi ili ne.",
+      "id": 1683,
+      "sha256": "bee16191fcf1a75a84603d2fd59e558773c19732e4a908e5d73448aea07edca5"
+    },
+    {
+      "file": "hr_hr-19.wav",
+      "language": "hr",
+      "transcript": "keopsova piramida koju su egipćani izgradili u trećem stoljeću prije krista jedna je od mnogih velikih piramidalnih građevina izgrađenih u čast pokojnog faraona",
+      "rawTranscript": "Keopsova piramida, koju su Egipćani izgradili u trećem stoljeću prije Krista, jedna je od mnogih velikih piramidalnih građevina izgrađenih u čast pokojnog faraona.",
+      "id": 1769,
+      "sha256": "6f116f880eb9dc0104ec04789af2745432b0cf865ed20a9f52e98d01bd78b350"
+    },
+    {
+      "file": "sl_si-0.wav",
+      "language": "sl",
+      "transcript": "napadel je tudi vsa bitja ki so stopila v vodo niti ogromni dinozavri kot so tiranozavri mu niso bili kos",
+      "rawTranscript": "Napadel je tudi vsa bitja, ki so stopila v vodo; niti ogromni dinozavri, kot so tiranozavri, mu niso bili kos.",
+      "id": 1738,
+      "sha256": "8bbe4027b86b288bbd062ca9e40f44357f3cbd85e67aa7f2dbba0ef27f81b708"
+    },
+    {
+      "file": "sl_si-1.wav",
+      "language": "sl",
+      "transcript": "starodavne kulture in plemena so jih začela gojiti za enostaven dostop do mleka dlake mesa ter kože",
+      "rawTranscript": "Starodavne kulture in plemena so jih začela gojiti za enostaven dostop do mleka, dlake, mesa ter kože.",
+      "id": 1886,
+      "sha256": "bc31931c18997ea11afce78559ab46e9601633d8e4b748fb011566e695d7356a"
+    },
+    {
+      "file": "sl_si-2.wav",
+      "language": "sl",
+      "transcript": "kari je jed na osnovi zelišč in začimb v kombinaciji z mesom ali zelenjavo",
+      "rawTranscript": "Kari je jed na osnovi zelišč in začimb v kombinaciji z mesom ali zelenjavo.",
+      "id": 1894,
+      "sha256": "ffa2ac6e107a53bcc22f1f92032126486c2c30e0e0f70b04473c46e645c089c5"
+    },
+    {
+      "file": "sl_si-3.wav",
+      "language": "sl",
+      "transcript": "bolezen prenašajo prašiči nato pa jo komarji prenesejo na ljudi",
+      "rawTranscript": "Bolezen prenašajo prašiči, nato pa jo komarji prenesejo na ljudi.",
+      "id": 1762,
+      "sha256": "2cb6cd04d9aa9d0f9d083aa6e93b8af119c759fdb6c8a5fafe22f551f4d3126f"
+    },
+    {
+      "file": "sl_si-4.wav",
+      "language": "sl",
+      "transcript": "pravilniki o odpovedi so različni vendar večina pravilnikov o odpovedi zaradi koronavirusa iz konca marca ne velja za julij 2020 ko naj bi se odvijale olimpijske igre",
+      "rawTranscript": "Pravilniki o odpovedi so različni, vendar večina pravilnikov o odpovedi zaradi koronavirusa iz konca marca ne velja za julij 2020, ko naj bi se odvijale Olimpijske igre.",
+      "id": 1946,
+      "sha256": "90b055fea00007d578e7ceeedffeb5b604af4b4fc5729948278a681b6643522d"
+    },
+    {
+      "file": "sl_si-5.wav",
+      "language": "sl",
+      "transcript": "za večino nemških peciv so značilni tudi mandlji lešniki in drugi oreški priljubljeni kolači se navadno še posebej priležejo ob skodelici močne kave",
+      "rawTranscript": "Za večino nemških peciv so značilni tudi mandlji, lešniki in drugi oreški. Priljubljeni kolači se navadno še posebej priležejo ob skodelici močne kave.",
+      "id": 1916,
+      "sha256": "2e659b9fa00f2ff6a57d2175fe0fb53fff34f950b65660f16a569061d0452206"
+    },
+    {
+      "file": "sl_si-6.wav",
+      "language": "sl",
+      "transcript": "gasilske reševalne ekipe so ob 23.35 naposled le ukrotile požar",
+      "rawTranscript": "Gasilske reševalne ekipe so ob 23.35 naposled le ukrotile požar.",
+      "id": 1748,
+      "sha256": "e471549328319592969ce8e5f8389e729f812971c498b527f0b7543c6233c343"
+    },
+    {
+      "file": "sl_si-7.wav",
+      "language": "sl",
+      "transcript": "posledično sta izumrli dve vrsti rib še dve pa postali ogroženi vključno z grbavim klenom",
+      "rawTranscript": "Posledično sta izumrli dve vrsti rib, še dve pa postali ogroženi, vključno z grbavim klenom.",
+      "id": 1752,
+      "sha256": "024aae83e288004a9b35aa37b08f7442ba4eb3c2e072c3240949d21757fe6f61"
+    },
+    {
+      "file": "sl_si-8.wav",
+      "language": "sl",
+      "transcript": "mesto je kot daru l-badya obnovil maroški sultan ime casablanca pa so mu nadeli španski trgovci ki so tam postavili trgovske postojanke",
+      "rawTranscript": "Mesto je kot Daru l-Badya obnovil maroški sultan, ime Casablanca pa so mu nadeli španski trgovci, ki so tam postavili trgovske postojanke.",
+      "id": 1822,
+      "sha256": "bf734cc40672eb095560041baf607f85d5598a60dc78da9da93c5c11ac1834a3"
+    },
+    {
+      "file": "sl_si-9.wav",
+      "language": "sl",
+      "transcript": "američani in francoske svobodne sile so v samo dveh tednih osvobodili jug francije in se usmerili proti nemčiji",
+      "rawTranscript": "Američani in Francoske svobodne sile so v samo dveh tednih osvobodili jug Francije in se usmerili proti Nemčiji.",
+      "id": 1702,
+      "sha256": "0cbc4fe93a54ce3c4ea9b87e07d4478f1c8b5203296e5f2b9561f1c8fccd1f08"
+    },
+    {
+      "file": "sl_si-10.wav",
+      "language": "sl",
+      "transcript": "casablanca je eden izmed najmanj zanimivih krajev za nakupovanje v celotnem maroku",
+      "rawTranscript": "Casablanca je eden izmed najmanj zanimivih krajev za nakupovanje v celotnem Maroku.",
+      "id": 1945,
+      "sha256": "2d12edb35c5fc29d802a88a2ce4c58d51c8a127f7485eeeb4d05a4811991dabe"
+    },
+    {
+      "file": "sl_si-11.wav",
+      "language": "sl",
+      "transcript": "na severu lahko obiščete tudi čudovito svetišče marije v fatimi sveti kraj kraj svetovno znanih prikazovanj marije",
+      "rawTranscript": "Na severu lahko obiščete tudi čudovito Svetišče Marije v Fatimi (sveti kraj), kraj svetovno znanih prikazovanj Marije.",
+      "id": 1834,
+      "sha256": "b8f6685738f798070b7dd4efd87ca2522a52f352f8f69a80f715393107e840eb"
+    },
+    {
+      "file": "sl_si-12.wav",
+      "language": "sl",
+      "transcript": "tako kot mesec privlači zemljo in povzroči plimovanje tudi mlečna cesta s silo vpliva na ozvezdje strelca",
+      "rawTranscript": "Tako kot Mesec privlači Zemljo in povzroči plimovanje, tudi Mlečna cesta s silo vpliva na ozvezdje Strelca.",
+      "id": 1763,
+      "sha256": "b4cdf6d21f2e09537fd486da6b6399e014a02ea1a4c08d8f2431bc7e3332575c"
+    },
+    {
+      "file": "sl_si-13.wav",
+      "language": "sl",
+      "transcript": "koze naj bi prvič udomačili pred približno 10.000 leti v gorovju zagros v iranu",
+      "rawTranscript": "Koze naj bi prvič udomačili pred približno 10.000 leti v gorovju Zagros v Iranu.",
+      "id": 1701,
+      "sha256": "a1c30f66ded4013ab93dfef78f16d19cc4449876e508a877aeadc660a1620ef2"
+    },
+    {
+      "file": "sl_si-14.wav",
+      "language": "sl",
+      "transcript": "povratni tokovi so tokovi ki se vračajo od valov ki se lomijo ob obali pogosto na grebenih ali čim podobnim",
+      "rawTranscript": "Povratni tokovi so tokovi, ki se vračajo od valov, ki se lomijo ob obali, pogosto na grebenih ali čim podobnim.",
+      "id": 1851,
+      "sha256": "9b6d18e2e8ade8e12e0ed9e3b7ab1dcaafebc8c0964da9fa99dbec6e238331fb"
+    },
+    {
+      "file": "sl_si-15.wav",
+      "language": "sl",
+      "transcript": "avtobus scotturb 403 redno vozi v sintro in se ustavi v cabo da roca",
+      "rawTranscript": "Avtobus Scotturb 403 redno vozi v Sintro in se ustavi v Cabo da Roca.",
+      "id": 1805,
+      "sha256": "6f83f9cc14a04d099cd36c96033b0483717c218d8e656ad96e58bd01d41fc73c"
+    },
+    {
+      "file": "sl_si-16.wav",
+      "language": "sl",
+      "transcript": "nesreča se je zgodila na visokem hribovitem terenu do nje pa naj bi prišlo zaradi sovražnega ognja",
+      "rawTranscript": "Nesreča se je zgodila na visokem hribovitem terenu, do nje pa naj bi prišlo zaradi sovražnega ognja.",
+      "id": 1987,
+      "sha256": "748efeb11409163d03786eb64e75e335139cae8b168c2292aa0a3877ad8a261f"
+    },
+    {
+      "file": "sl_si-17.wav",
+      "language": "sl",
+      "transcript": "ostale nominacije vključujejo nominacije za najboljši film režiserja kinematografijo kostumografijo filmsko montažo izvirno glasbo produkcijo montažo zvoka mešanje zvoka in izvirni scenarij",
+      "rawTranscript": "Ostale nominacije vključujejo nominacije za najboljši film, režiserja, kinematografijo, kostumografijo, filmsko montažo, izvirno glasbo, produkcijo, montažo zvoka, mešanje zvoka in izvirni scenarij.",
+      "id": 1789,
+      "sha256": "6d75b5fe7db58c0285783b23a326276660b8b93b94bd87e4f22512ba06dd410b"
+    },
+    {
+      "file": "sl_si-18.wav",
+      "language": "sl",
+      "transcript": "elemente kot sta kalcij in kalij štejemo za kovine seveda so tukaj tudi kovine kot sta srebro in zlato",
+      "rawTranscript": "Elemente, kot sta kalcij in kalij, štejemo za kovine. Seveda so tukaj tudi kovine, kot sta srebro in zlato.",
+      "id": 2006,
+      "sha256": "11dab7176543299c29f4a23adfbd135e150078070fb84de1ee38fcd8788af7d4"
+    },
+    {
+      "file": "sl_si-19.wav",
+      "language": "sl",
+      "transcript": "v krdelu so eden do trije samci ki so v sorodu in vse do trideset samic in mladičev",
+      "rawTranscript": "V krdelu so eden do trije samci, ki so v sorodu, in vse do trideset samic in mladičev.",
+      "id": 1977,
+      "sha256": "e76bdd7faf796be6e576c6c6ca9782ea9976eeac6877726a3fb90c510dbb7567"
+    },
+    {
+      "rawTranscript": "",
+      "excludeFromWer": true,
+      "annotation": "en_us-0 starts at 0 seconds; en_us-1 starts at 1 second; both sources mixed at half amplitude.",
+      "language": "en",
+      "file": "overlap.wav",
+      "sha256": "37c74a531e3edb2feaf5cbe5b26d5e1131c4013d0f109a809dc03a8f1534b148",
+      "transcript": ""
+    },
+    {
+      "rawTranscript": "",
+      "excludeFromWer": true,
+      "annotation": "Three seconds of generated silence; no speech expected.",
+      "language": "en",
+      "file": "silence.wav",
+      "sha256": "d2bf461131accfa72d691aeba867ca0687a1bcce0be1efda57ff4c0246464ae0",
+      "transcript": ""
+    }
+  ]
+}

@@ -19,7 +19,7 @@ public sealed class AudioServiceTests
         public Host()
         {
             System.IO.Directory.CreateDirectory(Path.Combine(Directory.Path, "helper"));
-            File.WriteAllText(Path.Combine(Directory.Path, "helper", "downloads.json"), "{\"helperProtocol\":2}");
+            File.WriteAllText(Path.Combine(Directory.Path, "helper", "downloads.json"), "{\"helperProtocol\":3}");
             var script = Path.Combine(Directory.Path, "server.ps1");
             File.WriteAllText(script, """
                 while ($line = [Console]::ReadLine()) {
@@ -31,8 +31,8 @@ public sealed class AudioServiceTests
                     $id = $request.requestId
                     if ($request.testMode -eq 'wrong-id') { $id = 'wrong' }
                     $result = @{ startSeconds=0; durationSeconds=1; processId=$PID; diarization=@{status='succeeded';speakerCount=0;turns=@()} }
-                    [Console]::WriteLine((@{protocol=2;requestId=$id;type='result';result=$result} | ConvertTo-Json -Compress -Depth 8))
-                    [Console]::WriteLine((@{protocol=2;requestId=$id;type='complete'} | ConvertTo-Json -Compress))
+                    [Console]::WriteLine((@{protocol=3;requestId=$id;type='result';result=$result} | ConvertTo-Json -Compress -Depth 8))
+                    [Console]::WriteLine((@{protocol=3;requestId=$id;type='complete'} | ConvertTo-Json -Compress))
                 }
                 """);
             Service.Launch = _ => WindowsChild.Start(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "WindowsPowerShell", "v1.0", "powershell.exe"),

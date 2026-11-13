@@ -6,16 +6,16 @@ Keep transcription, speaker separation, sound classification, and WAV/MP3 suppor
 
 Target Windows x64 with CPU inference. Preserve current user features; exact transcription output may change. No migration or compatibility layer for old Python analyses.
 
-This document describes future implementation. Saving it does not implement the native replacement.
+This document defines the native replacement's scope and acceptance criteria. Implementation and validation results are recorded in `CALL_RECORDER_ACCEPTANCE.md`. Final app acceptance belongs to the user; no VM testing is required.
 
 ## 1. Save the current build changes
 
 - Commit this plan together with the current Visual Studio build changes on `main`.
 - Include the script removals, Python smoke-check replacement, project changes, documentation, and ignore rules. Exclude generated output.
 - Push to `origin/main` without force and verify the remote commit.
-- Begin native implementation separately on `codex/native-audio`.
+- Implement all changes directly on `main`. Push only to `origin/main`; do not use a separate implementation branch.
 
-The current build changes have already passed Debug/Release builds, Clean/Rebuild, 234 tests, and the desktop/audio-service smoke check.
+The pre-migration build changes passed Debug/Release builds, Clean/Rebuild, 234 tests, and the desktop/audio-service smoke check. See the acceptance notes for native implementation results.
 
 ## 2. Native engine choices
 
@@ -62,7 +62,8 @@ These choices have native interfaces: [Whisper.net](https://github.com/sandrohan
 - Require no more than a two-percentage-point absolute increase in word error rate per language. Verify word timestamps against annotated speech and preserve source alignment across VAD and chunk boundaries.
 - Check YAMNet's complete label map and score/window outputs against baseline fixtures; check diarization turns and embedding reconciliation with the same models and settings.
 - Test worker crashes, cancellation during each native engine, warm reuse, idle unloading, and recording while inference fails.
-- On a clean Windows x64 VM without Python, .NET, Visual Studio, or an installed VC++ runtime: extract Release output, launch, complete setup, then disconnect networking and verify recording, transcription, speaker separation, classification, playback, and export.
-- Finish only when Build/Clean/Rebuild and all acceptance checks pass, and no maintained build, test, setup, or runtime path invokes Python.
+- Run automated tests, Build/Clean/Rebuild checks, and local native-engine smoke checks. No VM testing is required.
+- The user will perform final app acceptance testing: launch Release output, complete setup, then verify offline recording, transcription, speaker separation, classification, playback, and export. Report this manual testing as pending until the user supplies results.
+- Complete implementation when automated checks pass and no maintained build, test, setup, or runtime path invokes Python. Keep the user acceptance status separate from implementation completion.
 
 **Defaults:** CPU inference only; models download on first setup; no GPU work, old-analysis migration, or Python fallback. Keeping native TensorFlow preserves classification behavior but means the application still includes a substantial native runtime.

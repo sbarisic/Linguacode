@@ -1,0 +1,66 @@
+<Project>
+  <UsingTask TaskName="AcquireNativeAudio" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)/Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <Cache ParameterType="System.String" Required="true" />
+      <Archives ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+      <Files ParameterType="Microsoft.Build.Framework.ITaskItem[]" Output="true" />
+    </ParameterGroup>
+    <Task>
+
+      <Using Namespace="System" /><Using Namespace="System.IO" /><Using Namespace="System.Linq" />
+      <Using Namespace="System.Net.Http" /><Using Namespace="System.IO.Compression" /><Using Namespace="System.Security.Cryptography" />
+      <Code Type="Fragment" Language="cs"><![CDATA[
+        Directory.CreateDirectory(Cache);
+        var files = new System.Collections.Generic.List<Microsoft.Build.Framework.ITaskItem>();
+        foreach (var archive in Archives) {
+          var hash = archive.GetMetadata("Sha256");
+          var cached = Path.Combine(Cache, hash + ".zip");
+          Func<string, bool> matches = path => {
+            if (!File.Exists(path)) return false;
+            using (var input = File.OpenRead(path)) using (var sha = SHA256.Create())
+              return BitConverter.ToString(sha.ComputeHash(input)).Replace("-", "").Equals(hash, StringComparison.OrdinalIgnoreCase);
+          };
+          if (!matches(cached)) {
+            Log.LogMessage(Microsoft.Build.Framework.MessageImportance.High, "Downloading pinned native archive: " + archive.ItemSpec);
+            using (var client = new HttpClient { Timeout = TimeSpan.FromMinutes(20) })
+            using (var response = client.GetAsync(archive.GetMetadata("Url"), HttpCompletionOption.ResponseHeadersRead).GetAwaiter().GetResult()) {
+              response.EnsureSuccessStatusCode();
+              using (var input = response.Content.ReadAsStreamAsync().GetAwaiter().GetResult())
+              using (var output = File.Create(cached + ".partial")) input.CopyTo(output);
+            }
+            if (!matches(cached + ".partial")) throw new IOException("Native archive checksum mismatch: " + archive.ItemSpec);
+            if (File.Exists(cached)) File.Delete(cached);
+            File.Move(cached + ".partial", cached);
+          }
+          var directory = Path.Combine(Cache, hash);
+          Directory.CreateDirectory(directory);
+          using (var zip = ZipFile.OpenRead(cached)) foreach (var entry in zip.Entries) {
+            var name = entry.FullName.Replace('\\', '/');
+            var dll = name.EndsWith(".dll", StringComparison.OrdinalIgnoreCase);
+            var notice = name.IndexOf("LICENSE", StringComparison.OrdinalIgnoreCase) >= 0 || name.IndexOf("COPYING", StringComparison.OrdinalIgnoreCase) >= 0;
+            if ((!dll && !notice) || name.EndsWith("/")) continue;
+            var target = dll ? Path.GetFileName(name) : Path.Combine("licenses", archive.ItemSpec, name.Replace('/', Path.DirectorySeparatorChar));
+            var destination = Path.GetFullPath(Path.Combine(directory, target));
+            if (!destination.StartsWith(Path.GetFullPath(directory) + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase)) throw new IOException("Unsafe archive entry.");
+            Directory.CreateDirectory(Path.GetDirectoryName(destination));
+            if (!File.Exists(destination) || new FileInfo(destination).Length != entry.Length) entry.ExtractToFile(destination, true);
+            var item = new Microsoft.Build.Utilities.TaskItem(destination); item.SetMetadata("TargetPath", target); files.Add(item);
+          }
+        }
+        Files = files.ToArray();
+      ]]></Code>
+    </Task>
+  </UsingTask>
+  <ItemGroup>
+    <NativeArchive Include="TensorFlow-2.18.1" Sha256="28acdcea6c6b34828cf0e95e67802b0f3577d51bc2e8915de811b7aa0b04452d" Url="https://storage.googleapis.com/tensorflow/versions/2.18.1/libtensorflow-cpu-windows-x86_64.zip" />
+    <NativeArchive Include="FFmpeg-8.1" Sha256="bb6eedd1978549c84e8dff7b72c885df090db6a6ee1de44e76c8855babea495c" Url="https://github.com/FFmpeg-Builds/FFmpeg-Builds/releases/download/autobuild-2026-11-12-15-40/ffmpeg-n8.1.3-35-gf1acb0a266-win64-lgpl-shared-8.1.zip" />
+  </ItemGroup>
+  <Target Name="AcquireNativeAudioLibraries" BeforeTargets="GetCopyToOutputDirectoryItems" Condition="'$(DesignTimeBuild)' != 'true'">
+    <AcquireNativeAudio Cache="$(MSBuildThisFileDirectory)../obj/native-audio" Archives="@(NativeArchive)">
+      <Output TaskParameter="Files" ItemName="AcquiredNativeAudio" />
+    </AcquireNativeAudio>
+    <ItemGroup>
+      <ContentWithTargetPath Include="@(AcquiredNativeAudio)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    </ItemGroup>
+  </Target>
+</Project>

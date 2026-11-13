@@ -33,10 +33,10 @@ public sealed class RecordingAnalysisTests
     {
         var analysis = new RecordingAnalysis(data, backend);
         var installation = Path.Combine(data, "audio", "installations", Guid.NewGuid().ToString("N")); var helper = Path.Combine(installation, "helper"); Directory.CreateDirectory(helper);
-        foreach (var file in new[] { "audio_helper.py", "downloads.json", "requirements.lock" }) File.WriteAllText(Path.Combine(helper, file), "{}");
-        var decoder = Path.Combine(LocalAudioInstallation.Bundle, "recording_decode.py");
+        foreach (var file in new[] { "downloads.json" }) File.WriteAllText(Path.Combine(helper, file), "{}");
+
         var job = new RecordingAnalysisJob { Prepared = true, Frames = seconds * 16000L, Installation = Path.GetFileName(installation), Fingerprint = LocalAudioInstallation.Fingerprint(helper),
-            DecoderHash = RecordingAnalysisStore.Hash(decoder), Options = new(NoSummary: !summary), Chunks = RecordingAnalysis.PlanChunks(seconds * 16000L, false) };
+            DecoderHash = LocalAudioInstallation.Fingerprint(LocalAudioInstallation.Bundle), Options = new(NoSummary: !summary), Chunks = RecordingAnalysis.PlanChunks(seconds * 16000L, false) };
         Directory.CreateDirectory(analysis.Store.DirectoryFor(job.Id));
         var normalized = analysis.Store.FileFor(job.Id, "normalized.f32"); using (var file = File.Create(normalized)) file.SetLength(job.Frames * 4);
         RecordingAnalysisStore.WriteJson(analysis.Store.FileFor(job.Id, "preparation.json"), new { hash = RecordingAnalysisStore.Hash(normalized) }); analysis.Store.Save(job);

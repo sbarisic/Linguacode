@@ -35,15 +35,14 @@ public sealed partial class RecordingAnalysis : IDisposable
         if (!installation.Transcription || !installation.Diarization) throw new UserFacingException("Transcription and speaker engines are required. Run Linguacode.AudioHost audio setup.");
         using var installationLease = LocalAudioInstallation.Use(installation.Location);
         var manifest = JsonNode.Parse(File.ReadAllText(Path.Combine(installation.Location, "helper", "downloads.json")))!;
-        if (manifest["recordingAnalysis"]?.GetValue<int>() != 1) throw new UserFacingException("The installed helper needs updating for recording analysis. Run Linguacode.AudioHost audio setup.");
+        if (manifest["recordingAnalysis"]?.GetValue<int>() != 2) throw new UserFacingException("The installed helper needs updating for recording analysis. Run Linguacode.AudioHost audio setup.");
         var job = new RecordingAnalysisJob { SourceKind = kind, Source = source, Options = options,
             Installation = Path.GetFileName(installation.Location), Fingerprint = LocalAudioInstallation.Fingerprint(Path.Combine(installation.Location, "helper")),
-            DecoderHash = RecordingAnalysisStore.Hash(Path.Combine(LocalAudioInstallation.Bundle, "recording_decode.py")) };
+            DecoderHash = LocalAudioInstallation.Fingerprint(LocalAudioInstallation.Bundle) };
         if (id is not null) job.Id = id;
         if (job.Options.Question is { } question && MemoryPolicy.HasSecret(question)) job.Options = options with { Question = "[redacted]" };
         Store.CheckBudget(options.MaxStorageGiB);
         Directory.CreateDirectory(Store.DirectoryFor(job.Id));
-        File.Copy(Path.Combine(LocalAudioInstallation.Bundle, "recording_decode.py"), Store.FileFor(job.Id, "decoder.py"));
         Store.Save(job); return job;
     }
     public async Task<RecordingAnalysisJob> Run(string id, bool retryFailed, bool retryUncertain, Action<string> progress,
@@ -74,9 +73,7 @@ public sealed partial class RecordingAnalysis : IDisposable
             var location = Path.Combine(data, "audio", "installations", job.Installation);
             if (!Directory.Exists(location) || LocalAudioInstallation.Fingerprint(Path.Combine(location, "helper")) != job.Fingerprint)
                 throw new UserFacingException("The pinned audio installation is missing or changed. Restore that generation; this job will not substitute another model.");
-            var decoder = Store.FileFor(id, "decoder.py");
-            if (!File.Exists(decoder)) decoder = Path.Combine(LocalAudioInstallation.Bundle, "recording_decode.py");
-            if (RecordingAnalysisStore.Hash(decoder) != job.DecoderHash)
+            if (LocalAudioInstallation.Fingerprint(LocalAudioInstallation.Bundle) != job.DecoderHash)
                 throw new UserFacingException("The pinned decoder changed. Use the original build to resume, or create a new analysis.");
             if (!job.Prepared) await Timed("preparationSeconds", () => Prepare(job, location, progress, ct));
             else
@@ -113,7 +110,7 @@ public sealed partial class RecordingAnalysis : IDisposable
                 chunk.Hash = hash;
                 foreach (var component in needed) chunk.Components[component] = "Submitted";
                 Store.Save(job);
-                var request = new JsonObject { ["protocol"] = 1, ["operation"] = job.Options.Sounds ? "audio_listen" : "audio_transcribe",
+                var request = new JsonObject { ["protocol"] = 3, ["operation"] = job.Options.Sounds ? "audio_listen" : "audio_transcribe",
                     ["path"] = clip, ["models"] = Path.Combine(location, "models"), ["sourceHash"] = hash, ["deadlineTicks"] = ticks,
                     ["startSeconds"] = 0, ["durationSeconds"] = 120, ["language"] = job.Options.Language,
                     ["transcriptionHints"] = needed.Contains("transcription") ? job.Options.TranscriptionHints : null,
@@ -231,10 +228,7 @@ public sealed partial class RecordingAnalysis : IDisposable
         { RecordingAnalysisStore.CheckPath(candidate); if (File.Exists(candidate)) File.Delete(candidate); }
         Store.CheckBudget(job.Options.MaxStorageGiB);
         var request = new JsonObject { ["inputs"] = inputs, ["destination"] = normalized, ["maxBytes"] = space.Capacity - Math.Max(0, Store.UsedBytes() - initialBytes) };
-        var decoder = Store.FileFor(job.Id, "decoder.py");
-        if (!File.Exists(decoder)) decoder = Path.Combine(LocalAudioInstallation.Bundle, "recording_decode.py");
-        var outputText = await LocalAudioProcess.Run(Path.Combine(installation, "env", "Scripts", "python.exe"),
-            ["-I", "-u", decoder], Store.DirectoryFor(job.Id), request.ToJsonString(), ct);
+        var outputText = await LocalAudioProcess.Run(LocalAudioInstallation.Worker, ["--prepare"], Store.DirectoryFor(job.Id), request.ToJsonString(), ct);
         var decoded = JsonNode.Parse(outputText)!;
         if (decoded["coverage"] is JsonArray coverage)
             foreach (var interval in coverage) job.Coverage.Add(new(interval!["start"]!.GetValue<long>(), interval["frames"]!.GetValue<long>(), interval["kind"]!.ToString()));

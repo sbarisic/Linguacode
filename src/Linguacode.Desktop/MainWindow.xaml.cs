@@ -113,7 +113,7 @@ public partial class MainWindow : Window
     public async Task RunSmokeCheck()
     {
         // Construct/layout the real view without showing or activating a window.
-        if (!File.Exists(Path.Combine(recorder.DataDirectory, "recorder-ui-fixture.json"))) throw new InvalidOperationException("Smoke checks require disposable fixture data from prepare_recorder_ui_fixture.py.");
+        if (!File.Exists(Path.Combine(recorder.DataDirectory, "recorder-ui-fixture.json"))) throw new InvalidOperationException("Smoke checks require disposable fixture data from BuildSmokeTests.");
         var preparationCalls = 0;
         prepareTranscription = (_, _) => { preparationCalls++; return Task.CompletedTask; };
         await Initialize(); timer.Stop(); playbackTimer.Stop();

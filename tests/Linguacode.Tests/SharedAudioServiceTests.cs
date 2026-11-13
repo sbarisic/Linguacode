@@ -299,9 +299,7 @@ public sealed class SharedAudioServiceTests
             var name = Guid.NewGuid().ToString("N");
             var helper = Path.Combine(f.Directory.Path, "audio", "installations", name, "helper");
             System.IO.Directory.CreateDirectory(helper);
-            File.WriteAllText(Path.Combine(helper, "downloads.json"), protocol == 1 ? """{"protocol":1}""" : """{"helperProtocol":2}""");
-            File.WriteAllText(Path.Combine(helper, "audio_helper.py"), "# test helper");
-            File.WriteAllText(Path.Combine(helper, "requirements.lock"), "# test lock");
+            File.WriteAllText(Path.Combine(helper, "downloads.json"), protocol == 1 ? """{"helperProtocol":3,"revision":1}""" : """{"helperProtocol":3,"revision":2}""");
             var fingerprint = LocalAudioInstallation.Fingerprint(helper);
             File.WriteAllText(Path.Combine(helper, "..", "ready.json"), Json.Serialize(new { fingerprint }));
             return f.Submission() with { Generation = name, Fingerprint = fingerprint };

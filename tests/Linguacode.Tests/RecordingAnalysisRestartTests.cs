@@ -37,11 +37,10 @@ public sealed class RecordingAnalysisRestartTests
             Backend.Installation = Path.Combine(directory.Path, "audio", "installations", Guid.NewGuid().ToString("N"));
             var helper = Path.Combine(Backend.Installation, "helper"); Directory.CreateDirectory(helper);
             System.IO.File.WriteAllText(Path.Combine(helper, "downloads.json"), """{"transcriptionHints":1}""");
-            foreach (var name in new[] { "audio_helper.py", "requirements.lock" }) System.IO.File.WriteAllText(Path.Combine(helper, name), "{}");
             Recorder = new(directory.Path, Path.Combine(directory.Path, "Linguacode.AudioHost.exe"), audioBackend: Backend);
-            Job = new() { Prepared = true, Version = 2, TrackCount = 2, Frames = 160000, Installation = Path.GetFileName(Backend.Installation),
+            Job = new() { Prepared = true, Version = 4, TrackCount = 2, Frames = 160000, Installation = Path.GetFileName(Backend.Installation),
                 Fingerprint = LocalAudioInstallation.Fingerprint(helper), Options = new(NoSummary: true),
-                DecoderHash = RecordingAnalysisStore.Hash(Path.Combine(LocalAudioInstallation.Bundle, "recording_decode.py")) };
+                DecoderHash = LocalAudioInstallation.Fingerprint(LocalAudioInstallation.Bundle) };
             foreach (var track in new[] { "call", "mic" })
             {
                 var chunk = RecordingAnalysis.PlanChunks(Job.Frames, false).Single();
@@ -113,7 +112,7 @@ public sealed class RecordingAnalysisRestartTests
     {
         using var f = new Fixture(); await f.Run();
         var job = f.Recorder.Analysis.Store.Read(f.Job.Id);
-        job.Version = 3; job.Revision++; job.ComponentScope = "transcription"; job.ResetPending = true; job.State = "Paused";
+        job.Version = 4; job.Revision++; job.ComponentScope = "transcription"; job.ResetPending = true; job.State = "Paused";
         f.Recorder.Analysis.Store.Save(job);
         // A reset crashed after removing only the first chunk's selected component.
         var evidence = RecordingAnalysisStore.ReadJson<JsonObject>(f.File("evidence-000000.json")); evidence.Remove("transcription");

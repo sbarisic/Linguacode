@@ -114,7 +114,7 @@ public sealed partial class RecordingAnalysis
             }
             foreach (var row in previous) transcript.WriteLine(row.ToJsonString());
         }
-        if (job.Version >= 2)
+        if (job.TrackCount == 2)
         {
             var sorted = Rows(transcriptPath + ".new").OrderBy(r => N(r["startSeconds"])).ThenBy(r => r["id"]!.ToString()).Select(r => r.ToJsonString()).ToArray();
             File.WriteAllLines(transcriptPath + ".new", sorted);

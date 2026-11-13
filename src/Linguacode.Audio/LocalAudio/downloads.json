@@ -1,48 +1,21 @@
 {
   "protocol": 1,
-  "recordingAnalysis": 1,
+  "recordingAnalysis": 2,
   "transcriptionHints": 1,
-  "python": "3.11.14",
-  "uv": "0.9.5",
-  "whisperRevision": "536b0662742c02347bc0e980a01041f333bce120",
   "yamnet": "google/yamnet/1",
   "classMapSha256": "cdf24d193e196d9e95912a2667051ae203e92a2ba09449218ccb40ef787c6df2",
   "downloads": [
     {
-      "path": "whisper/config.json",
-      "url": "https://huggingface.co/Systran/faster-whisper-small/resolve/536b0662742c02347bc0e980a01041f333bce120/config.json",
-      "sha256": "b55496ac7940a7ae47d2c01eab40edfd8701feec1229d9cce3b40014383fb828",
-      "size": 2370
+      "sha256": "49c8fb02b65e6049d5fa6c04f81f53b867b5ec9540406812c643f177317f779f",
+      "size": 264464607,
+      "path": "whisper/ggml-small-q8_0.bin",
+      "url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/5359861c739e955e79d9a303bcbc70fb988958b1/ggml-small-q8_0.bin"
     },
     {
-      "path": "whisper/tokenizer.json",
-      "url": "https://huggingface.co/Systran/faster-whisper-small/resolve/536b0662742c02347bc0e980a01041f333bce120/tokenizer.json",
-      "sha256": "fb7b63191e9bb045082c79fd742a3106a12c99513ab30df4a0d47fa6cb6fd0ab",
-      "size": 2203239
-    },
-    {
-      "path": "whisper/vocabulary.txt",
-      "url": "https://huggingface.co/Systran/faster-whisper-small/resolve/536b0662742c02347bc0e980a01041f333bce120/vocabulary.txt",
-      "sha256": "34ce3fe1c5041027b3f8d42912270993f986dbc4bb34cf27f951e34a1e453913",
-      "size": 459861
-    },
-    {
-      "path": "whisper/model.bin",
-      "url": "https://huggingface.co/Systran/faster-whisper-small/resolve/536b0662742c02347bc0e980a01041f333bce120/model.bin",
-      "sha256": "3e305921506d8872816023e4c273e75d2419fb89b24da97b4fe7bce14170d671",
-      "size": 483546902
-    },
-    {
-      "path": "python.tar.gz",
-      "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20251014/cpython-3.11.14%2B20251014-x86_64-pc-windows-msvc-install_only_stripped.tar.gz",
-      "sha256": "c2a7b0bb86eb9f1cc094a01bdabef7ddc77f89f8e45161fa7819f2b4a7ba7bc1",
-      "size": 25648990
-    },
-    {
-      "path": "uv.zip",
-      "url": "https://github.com/astral-sh/uv/releases/download/0.9.5/uv-x86_64-pc-windows-msvc.zip",
-      "sha256": "515dc53d7553f1357d0abc1f70acd921fbb9e30230b1d9a08737236daa6ee920",
-      "size": 20760405
+      "sha256": "2aa269b785eeb53a82983a20501ddf7c1d9c48e33ab63a41391ac6c9f7fb6987",
+      "size": 885098,
+      "path": "whisper/ggml-silero-v6.2.0.bin",
+      "url": "https://huggingface.co/ggml-org/whisper-vad/resolve/9ffd54a1e1ee413ddf265af9913beaf518d1639b/ggml-silero-v6.2.0.bin"
     },
     {
       "path": "yamnet.tar.gz",
@@ -63,7 +36,7 @@
       "size": 40257283
     }
   ],
-  "helperProtocol": 2,
+  "helperProtocol": 3,
   "diarization": {
     "engine": "sherpa-onnx 1.13.8",
     "segmentation": "pyannote/segmentation-3.0 FP32",
@@ -78,5 +51,6 @@
       "embedding": "NeMo Toolkit Apache-2.0, per NVIDIA TitaNet-S model card",
       "embeddingModelCard": "https://catalog.ngc.nvidia.com/orgs/nvidia/nemo/models/titanet_small"
     }
-  }
+  },
+  "nativeIdentity": "whisper.net-1.9.1-small-q8_0-silero-6.2.0_sherpa-1.13.8_tf-2.18.1_ffmpeg-8.1-v1"
 }

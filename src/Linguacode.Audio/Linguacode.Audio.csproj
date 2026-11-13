@@ -1,4 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup><ProjectReference Include="../Linguacode.Core/Linguacode.Core.csproj" /><PackageReference Include="NAudio.Wasapi" /></ItemGroup>
-  <ItemGroup><Content Include="LocalAudio/audio_helper.py;LocalAudio/recording_decode.py;LocalAudio/downloads.json;LocalAudio/requirements.lock" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" /></ItemGroup>
+  <ItemGroup><PackageReference Include="SharpCompress" /><Content Include="LocalAudio/downloads.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" /></ItemGroup>
+  <ItemGroup><ProjectReference Include="../Linguacode.AudioWorker/Linguacode.AudioWorker.csproj" ReferenceOutputAssembly="false" Private="false" /></ItemGroup>
+  <Import Project="../../eng/CopyAudioWorker.targets" />
 </Project>

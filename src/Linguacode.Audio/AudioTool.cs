@@ -103,11 +103,11 @@ public sealed class AudioTool(ILocalAudioBackend? backend = null) : IDisposable
             temporary = new AudioTemporary(ctx.Store.DataDirectory);
             var snapshot = Path.Combine(temporary.Directory, "input" + Path.GetExtension(path).ToLowerInvariant());
             await File.WriteAllBytesAsync(snapshot, source, timeout.Token);
-            var request = new JsonObject { ["protocol"] = 1, ["sourceHash"] = sourceHash, ["deadlineTicks"] = deadlineTicks, ["operation"] = call.Name, ["models"] = Path.Combine(status.Location, "models"),
+            var request = new JsonObject { ["protocol"] = 3, ["sourceHash"] = sourceHash, ["deadlineTicks"] = deadlineTicks, ["operation"] = call.Name, ["models"] = Path.Combine(status.Location, "models"),
                 ["path"] = snapshot, ["startSeconds"] = args["startSeconds"]!.DeepClone(), ["durationSeconds"] = args["durationSeconds"]!.DeepClone(), ["language"] = args["language"]?.DeepClone() ?? "auto" };
             var missing = needed.Where(c => cached.Components[c] is null).ToArray();
             var installedManifest = JsonNode.Parse(File.ReadAllText(Path.Combine(status.Location, "helper", "downloads.json")))!;
-            if (installedManifest["helperProtocol"]?.GetValue<int>() == 2) request["components"] = new JsonArray(missing.Select(c => (JsonNode?)JsonValue.Create(c)).ToArray());
+            if (installedManifest["helperProtocol"]?.GetValue<int>() == 3) request["components"] = new JsonArray(missing.Select(c => (JsonNode?)JsonValue.Create(c)).ToArray());
             var snapshotSeconds = elapsed.Elapsed.TotalSeconds - snapshotStarted;
             var result = missing.Length > 0 ? await backend.Run(status.Location, request, Progress, timeout.Token)
                 : ArtifactAccess.ReadAudio(ctx, cached.Sources.First().Value!.ToString()) ?? throw new UserFacingException("Retained audio evidence became unavailable.");
@@ -124,7 +124,7 @@ public sealed class AudioTool(ILocalAudioBackend? backend = null) : IDisposable
             timeout.Token.ThrowIfCancellationRequested();
             var successful = AudioViews.Components.Any(k => result[k]?["status"]?.ToString() == "succeeded");
             if (!successful) throw new UserFacingException("Local audio produced no successful component: " + result.ToJsonString()[..Math.Min(result.ToJsonString().Length, 1600)]);
-            result["schemaVersion"] = 2; result["kind"] = "audio-analysis"; result["backend"] = "local"; result["protocol"] = 1;
+            result["schemaVersion"] = 2; result["kind"] = "audio-analysis"; result["backend"] = "local"; result["protocol"] = 3;
             result["path"] = Path.GetRelativePath(ctx.Workspace, path); result["sourceHash"] = sourceHash;
             result["requestedDurationSeconds"] = args["durationSeconds"]!.DeepClone(); result["analyzedAt"] = DateTimeOffset.UtcNow;
             result["model"] = call.Name == "audio_transcribe" ? "Whisper small" : call.Name == "audio_classify" ? "YAMNet 1" : call.Name == "audio_diarize" ? "Local speaker separation" : "Whisper small + YAMNet 1 + speaker separation";

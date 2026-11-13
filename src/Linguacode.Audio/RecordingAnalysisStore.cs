@@ -11,7 +11,7 @@ public sealed record RecordingAnalysisOptions(bool Sounds = false, string Langua
     string? TranscriptionHints = null);
 public sealed class RecordingAnalysisJob
 {
-    public int Version { get; set; } = 1;
+    public int Version { get; set; } = 4;
     public string Id { get; set; } = Guid.NewGuid().ToString("N");
     public string SourceKind { get; set; } = "";
     public string Source { get; set; } = "";
@@ -107,7 +107,7 @@ public sealed class RecordingAnalysisStore
     public RecordingAnalysisJob Read(string id)
     {
         var job = ReadJson<RecordingAnalysisJob>(FileFor(id, "job.json"));
-        if (job.Version is not (1 or 2 or 3) || job.Id != id) throw new UserFacingException("Unsupported analysis record.");
+        if (job.Version != 4 || job.Id != id) throw new UserFacingException("Unsupported analysis record.");
         if (job.State == "Running")
         {
             try { using var lease = Lease(id); job.State = "Interrupted"; job.Error = "The owning client stopped. Resume explicitly; uncertain submissions require --retry-uncertain."; }

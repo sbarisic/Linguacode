@@ -70,10 +70,10 @@ public sealed class CallAnalysisTests
     {
         var analysis = new RecordingAnalysis(data, backend); var installation = Path.Combine(data, "audio", "installations", Guid.NewGuid().ToString("N"));
         var helper = Path.Combine(installation, "helper"); Directory.CreateDirectory(helper);
-        foreach (var file in new[] { "audio_helper.py", "downloads.json", "requirements.lock" }) File.WriteAllText(Path.Combine(helper, file), "{}");
-        var job = new RecordingAnalysisJob { Version = 2, TrackCount = 2, Prepared = true, Frames = 160000,
+        foreach (var file in new[] { "downloads.json" }) File.WriteAllText(Path.Combine(helper, file), "{}");
+        var job = new RecordingAnalysisJob { Version = 4, TrackCount = 2, Prepared = true, Frames = 160000,
             Installation = Path.GetFileName(installation), Fingerprint = LocalAudioInstallation.Fingerprint(helper),
-            DecoderHash = RecordingAnalysisStore.Hash(Path.Combine(LocalAudioInstallation.Bundle, "recording_decode.py")), Options = new(NoSummary: true) };
+            DecoderHash = LocalAudioInstallation.Fingerprint(LocalAudioInstallation.Bundle), Options = new(NoSummary: true) };
         foreach (var track in new[] { "call", "mic" }) foreach (var chunk in RecordingAnalysis.PlanChunks(job.Frames, false))
         { chunk.Index = job.Chunks.Count; chunk.TrackId = track; chunk.SourceOffset = track == "mic" ? job.Frames : 0; job.Chunks.Add(chunk); }
         Directory.CreateDirectory(analysis.Store.DirectoryFor(job.Id)); var path = analysis.Store.FileFor(job.Id, "normalized.f32");

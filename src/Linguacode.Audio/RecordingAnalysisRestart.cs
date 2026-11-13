@@ -29,7 +29,7 @@ public sealed partial class RecordingAnalysis
         // Save intent first. A crash during reset resumes this idempotent cleanup before any inference.
         job.ResetPreviousInstallation = job.Installation; job.ResetPreviousFingerprint = job.Fingerprint;
         job.Installation = Path.GetFileName(installation.Location); job.Fingerprint = LocalAudioInstallation.Fingerprint(helper);
-        job.Options = options; job.ComponentScope = component; job.Version = 3; job.Revision++;
+        job.Options = options; job.ComponentScope = component; job.Version = 4; job.Revision++;
         if (component == "diarization") job.SpeakerNames = job.SpeakerNames.Where(p => p.Key == "You").ToDictionary(p => p.Key, p => p.Value);
         job.ResetPending = true; job.State = "Paused"; job.Stage = "Reset"; job.Error = null;
         Store.Save(job);

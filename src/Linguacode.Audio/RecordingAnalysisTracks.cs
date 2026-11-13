@@ -11,11 +11,14 @@ public sealed partial class RecordingAnalysis
         _ = location;
         if (manifest.Id != job.Source || manifest.Version != 2 || manifest.State != "Completed" && !(manifest.State == "Interrupted" && job.Options.AllowInterrupted) || manifest.Tracks.Count != 2 ||
             !manifest.Tracks.Select(t => t.TrackId).Order().SequenceEqual(new[] { "call", "mic" })) throw new IOException("Invalid call manifest.");
-        job.Version = 2; job.TrackCount = 2; job.Chunks.Clear(); job.Coverage.Clear();
+        job.Version = 4; job.TrackCount = 2; job.Chunks.Clear(); job.Coverage.Clear();
         job.Frames = (long)Math.Round(manifest.DurationSeconds * 16000);
         if (job.Frames <= 0 || checked(job.Frames * 8) > capacity) throw new IOException("Call exceeds reserved analysis storage.");
         var path = Store.FileFor(job.Id, "normalized.f32");
-        using (var output = new BinaryWriter(new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.None)))
+        var partial = Path.ChangeExtension(path, ".partial");
+        try
+        {
+        using (var output = new BinaryWriter(new FileStream(partial, FileMode.Create, FileAccess.Write, FileShare.None)))
         {
             foreach (var track in manifest.Tracks)
             {
@@ -55,6 +58,9 @@ public sealed partial class RecordingAnalysis
             }
             output.Flush(); ((FileStream)output.BaseStream).Flush(true);
         }
+        File.Move(partial, path, true);
+        }
+        finally { if (File.Exists(partial)) File.Delete(partial); }
         job.SourceHash = RecordingAnalysisStore.Hash(Path.Combine(snapshot, "manifest.json"));
         RecordingAnalysisStore.WriteJson(Store.FileFor(job.Id, "preparation.json"), new { version = 2, frames = job.Frames, hash = RecordingAnalysisStore.Hash(path) });
         job.Prepared = true; Store.Save(job); await Task.CompletedTask;

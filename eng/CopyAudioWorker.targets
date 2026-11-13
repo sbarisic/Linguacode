@@ -1,0 +1,11 @@
+<Project>
+  <Target Name="IncludeAudioWorker" BeforeTargets="GetCopyToOutputDirectoryItems" Condition="'$(DesignTimeBuild)' != 'true'">
+    <MSBuild Projects="$(MSBuildThisFileDirectory)../src/Linguacode.AudioWorker/Linguacode.AudioWorker.csproj"
+             Targets="GetAudioWorkerFiles" Properties="Configuration=$(Configuration);Platform=$(Platform)">
+      <Output TaskParameter="TargetOutputs" ItemName="WorkerFiles" />
+    </MSBuild>
+    <ItemGroup>
+      <ContentWithTargetPath Include="@(WorkerFiles)" TargetPath="AudioWorker/%(WorkerFiles.WorkerRelativePath)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    </ItemGroup>
+  </Target>
+</Project>

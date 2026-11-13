@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType><RuntimeIdentifier>win-x64</RuntimeIdentifier><SelfContained>true</SelfContained>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="licenses/*;../../THIRD_PARTY_NOTICES.md" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <PackageReference Include="Whisper.net" /><PackageReference Include="Whisper.net.Runtime" />
+    <PackageReference Include="org.k2fsa.sherpa.onnx" /><PackageReference Include="FFmpeg.AutoGen" />
+    <PackageReference Include="ThinkGeo.Dependency.MicrosoftVisualCRunTime140" />
+  </ItemGroup>
+  <Target Name="GetAudioWorkerFiles" Returns="@(AudioWorkerFiles)">
+    <ItemGroup>
+      <AudioWorkerFiles Include="$(TargetDir)**/*" Exclude="$(TargetDir)runtimes/linux*/**/*;$(TargetDir)runtimes/macos*/**/*;$(TargetDir)runtimes/win-arm64/**/*" />
+      <AudioWorkerFiles Update="@(AudioWorkerFiles)">
+        <WorkerRelativePath>%(RecursiveDir)%(Filename)%(Extension)</WorkerRelativePath>
+      </AudioWorkerFiles>
+    </ItemGroup>
+  </Target>
+  <Import Project="../../eng/NativeAudio.targets" />
+</Project>
