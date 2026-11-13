@@ -32,11 +32,11 @@
   <Style x:Key="SectionTitle" TargetType="TextBlock"><Setter Property="FontSize" Value="{DynamicResource Recorder.FontHeading}"/><Setter Property="FontWeight" Value="SemiBold"/><Setter Property="Margin" Value="0,0,0,12"/></Style>
   <Style x:Key="CommandButton" TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}">
     <Setter Property="FontSize" Value="{DynamicResource Recorder.FontBody}"/><Setter Property="Foreground" Value="{DynamicResource Recorder.Text}"/><Setter Property="Background" Value="Transparent"/>
-    <Setter Property="MinWidth" Value="62"/><Setter Property="Padding" Value="8,7"/><Setter Property="Margin" Value="2"/>
+    <Setter Property="MinWidth" Value="62"/><Setter Property="MinHeight" Value="32"/><Setter Property="Padding" Value="8,5"/><Setter Property="Margin" Value="2,0"/>
     <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="Button">
       <Border x:Name="Chrome" Background="{TemplateBinding Background}" BorderBrush="Transparent" BorderThickness="1" CornerRadius="6" Padding="{TemplateBinding Padding}">
-        <StackPanel><TextBlock x:Name="Glyph" Text="{TemplateBinding Tag}" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Foreground="{TemplateBinding Foreground}" FontSize="{DynamicResource Recorder.FontIcon}" HorizontalAlignment="Center" Margin="0,0,0,7"/>
-          <ContentPresenter HorizontalAlignment="Center" RecognizesAccessKey="True" TextElement.Foreground="{DynamicResource Recorder.Text}"/></StackPanel>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center"><TextBlock x:Name="Glyph" Text="{TemplateBinding Tag}" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Foreground="{TemplateBinding Foreground}" FontSize="16" VerticalAlignment="Center" Margin="0,0,7,0"/>
+          <ContentPresenter VerticalAlignment="Center" RecognizesAccessKey="True" TextElement.Foreground="{DynamicResource Recorder.Text}"/></StackPanel>
       </Border>
       <ControlTemplate.Triggers>
         <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Chrome" Property="Background" Value="{DynamicResource Recorder.Hover}"/></Trigger>

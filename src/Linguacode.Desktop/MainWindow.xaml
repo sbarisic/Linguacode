@@ -29,7 +29,6 @@
                   <Button Style="{StaticResource CommandButton}" Tag="&#xE71A;" x:Name="StopButton" Content="Stop" Click="StopClick" ToolTip="Stop and save recording"/>
                   <Button Style="{StaticResource CommandButton}" Tag="&#xE768;" x:Name="PlayButton" Content="Play" Click="PlayClick"/>
                 </StackPanel>
-                <TextBlock Text="Recording" HorizontalAlignment="Center" Style="{StaticResource Hint}" Margin="0,0,0,6"/>
               </StackPanel>
 
               <Border BorderBrush="{DynamicResource Recorder.Border}" BorderThickness="1,0,1,0" Padding="10,0" Margin="0,4">
@@ -38,7 +37,7 @@
                   <Button x:Name="ExportMenuButton" Content="Export ▾" Style="{StaticResource CommandButton}" Tag="&#xE896;" Click="ExportMenuClick">
                     <Button.ContextMenu><ContextMenu><MenuItem x:Name="ExportResultsMenu" Header="Export results…" Click="ExportClick"/><MenuItem x:Name="ExportAudioMenu" Header="Export audio…" Click="RawExportClick"/></ContextMenu></Button.ContextMenu>
                   </Button>
-                </StackPanel><TextBlock Text="Actions" HorizontalAlignment="Center" Style="{StaticResource Hint}" Margin="0,0,0,2"/></StackPanel>
+                </StackPanel></StackPanel>
               </Border>
             </StackPanel>
           </ScrollViewer>
