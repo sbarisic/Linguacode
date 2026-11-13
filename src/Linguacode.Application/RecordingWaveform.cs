@@ -12,14 +12,14 @@ public sealed record RecordingWaveform(double Duration, ImmutableArray<Immutable
     ImmutableArray<WaveformCoverage> Coverage, string Identity)
 {
     public const double BinSeconds = .02;
-    // Same selector order as CallPlayback: mix, first source, second source.
+    // Same selector order as CallPlayback: mix, output, microphone.
     public ImmutableArray<WaveformPeak> ForTrack(int track) => Channels[Math.Clamp(track, 0, Channels.Length - 1)];
 }
 
 /// <summary>Disposable, local peak cache. Audio is read on the playback clock, never by the UI thread.</summary>
 public static class RecordingWaveforms
 {
-    private const int Version = 1;
+    private const int Version = 2;
     public static Task<RecordingWaveform> LoadAsync(string audioDirectory, CaptureManifest capture, string cacheDirectory,
         CancellationToken cancellationToken = default, IProgress<double>? progress = null) => Task.Run(() => Load(audioDirectory, capture, cacheDirectory, cancellationToken, progress), cancellationToken);
 
@@ -98,6 +98,7 @@ public static class RecordingWaveforms
                     var first = readers[0].Sample(time);
                     var second = readers.Count > 1 ? readers[1].Sample(time) : 0;
                     var mixed = readers.Count > 1 ? (first + second) / 2 : first;
+                    if (capture.Version == 1 && capture.Device.Kind == "microphone") (first, second) = (second, first);
                     min0 = Math.Min(min0, mixed); max0 = Math.Max(max0, mixed);
                     min1 = Math.Min(min1, first); max1 = Math.Max(max1, first);
                     min2 = Math.Min(min2, second); max2 = Math.Max(max2, second);
@@ -124,7 +125,7 @@ public static class RecordingWaveforms
         return new(capture.DurationSeconds, data.Select(ImmutableArray.CreateRange).ToImmutableArray(), coverage, identity);
     }
 
-    private static string SourceName(CaptureManifest source, int index) => string.IsNullOrEmpty(source.TrackId) ? index == 0 ? "call" : "mic" : source.TrackId;
+    private static string SourceName(CaptureManifest source, int index) => string.IsNullOrEmpty(source.TrackId) ? source.Device.Kind == "microphone" ? "mic" : "call" : source.TrackId;
 
     private static ImmutableArray<WaveformCoverage> BuildCoverage(CaptureManifest[] sources, double duration)
     {

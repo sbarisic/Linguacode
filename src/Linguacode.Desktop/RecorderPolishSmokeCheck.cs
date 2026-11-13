@@ -15,6 +15,17 @@ public partial class MainWindow
         var savedOutput = recorder.Preferences.OutputId; var savedMic = recorder.Preferences.MicrophoneId;
         BeginNewRecording();
         if (Selected is not null || RecordButton.Content.ToString() != "Record" || TitleInput.IsReadOnly || DraftDevices.Visibility != Visibility.Visible) throw new InvalidOperationException("New recording draft was not editable.");
+        CaptureOutput.IsChecked = false; CaptureMicrophone.IsChecked = true;
+        if (DraftOutput.IsEnabled || !DraftMicrophone.IsEnabled) throw new InvalidOperationException("Microphone-only selection did not disable output.");
+        CaptureMicrophone.IsChecked = false;
+        try { await Start(false); throw new InvalidOperationException("Both disabled sources were accepted."); }
+        catch (Linguacode.Core.UserFacingException) { }
+        CaptureOutput.IsChecked = true;
+        if (!DraftOutput.IsEnabled || DraftMicrophone.IsEnabled) throw new InvalidOperationException("Output-only selection did not disable microphone.");
+        await Dispatcher.InvokeAsync(() => { }, System.Windows.Threading.DispatcherPriority.ContextIdle);
+        ((FrameworkElement)Content).InvalidateMeasure();
+        WriteSmokePreview("output-only-draft.png", size);
+        CaptureMicrophone.IsChecked = true;
         var overrideOutput = new CaptureDevice("draft-output", "Long output device name for this recording only", false);
         var overrideMic = new CaptureDevice("draft-mic", "Microphone override", false, "microphone");
         RefreshDraftDevices([overrideOutput, overrideMic]); DraftOutput.SelectedItem = overrideOutput; DraftMicrophone.SelectedItem = overrideMic;

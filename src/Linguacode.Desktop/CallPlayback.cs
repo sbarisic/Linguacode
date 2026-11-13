@@ -12,6 +12,7 @@ internal sealed class CallPlayback : IWaveProvider, IDisposable
     private readonly IWavePlayer player;
     private long frame;
     private int selectedTrack;
+    private readonly bool microphoneOnly;
     public WaveFormat WaveFormat { get; } = WaveFormat.CreateIeeeFloatWaveFormat(48000, 1);
     public double Position { get { lock (sync) return frame >= totalFrames ? duration : frame / 48000d; } }
     public bool AtEnd { get { lock (sync) return frame >= totalFrames; } }
@@ -22,6 +23,7 @@ internal sealed class CallPlayback : IWaveProvider, IDisposable
         duration = capture.DurationSeconds;
         totalFrames = (long)(duration * 48000);
         var sources = capture.Version == 2 ? capture.Tracks : [capture];
+        microphoneOnly = capture.Version == 1 && capture.Device.Kind == "microphone";
         var opened = new List<CaptureAudioReader>();
         try
         {
@@ -60,7 +62,8 @@ internal sealed class CallPlayback : IWaveProvider, IDisposable
             for (var i = 0; i < samples; i++, frame++)
             {
                 var seconds = frame / 48000d;
-                float value = selectedTrack == 0 ? tracks.Sum(t => t.Sample(seconds)) / tracks.Length : selectedTrack <= tracks.Length ? tracks[selectedTrack - 1].Sample(seconds) : 0;
+                var sourceTrack = microphoneOnly ? selectedTrack == 2 ? 1 : selectedTrack == 1 ? 2 : 0 : selectedTrack;
+                float value = sourceTrack == 0 ? tracks.Sum(t => t.Sample(seconds)) / tracks.Length : sourceTrack <= tracks.Length ? tracks[sourceTrack - 1].Sample(seconds) : 0;
                 BitConverter.TryWriteBytes(buffer.Slice(i * 4, 4), value);
             }
             return samples * 4;

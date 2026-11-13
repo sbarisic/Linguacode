@@ -8,6 +8,25 @@ namespace Linguacode.Tests;
 public sealed class CallAnalysisTests
 {
     [Fact]
+    public async Task MicrophoneOnlyCapturePreparesAndTranscribesAsYou()
+    {
+        using var directory = new TestDirectory(); var backend = new Backend();
+        var (analysis, job) = Prepared(directory.Path, backend); using var owned = analysis;
+        job.SourceKind = "capture"; job.Source = Guid.NewGuid().ToString("N"); job.Prepared = false; job.TrackCount = 1;
+        var snapshot = analysis.Store.FileFor(job.Id, "source"); Directory.CreateDirectory(snapshot);
+        var file = Path.Combine(snapshot, "chunk-000001.wav"); NativeAudioTests.Wave(file, 4, 16000, 1);
+        var capture = new CaptureManifest { Id = job.Source, State = "Completed", SampleRate = 16000, Channels = 1,
+            BitsPerSample = 16, BlockAlign = 2, Frames = 64000, Device = new("mic", "Microphone", true, "microphone"),
+            Chunks = [new("chunk-000001.wav", 0, 64000, new FileInfo(file).Length, RecordingAnalysisStore.Hash(file))] };
+        RecordingAnalysisStore.WriteJson(Path.Combine(snapshot, "manifest.json"), capture);
+        analysis.Store.Save(job);
+        var result = await analysis.Run(job.Id, false, false, _ => { }, null, null, default);
+        Assert.Equal("Completed", result.State);
+        Assert.All(result.Chunks, chunk => Assert.Equal("mic", chunk.TrackId));
+        var rows = File.ReadAllLines(analysis.Store.FileFor(job.Id, "transcript.jsonl")).Select(line => JsonNode.Parse(line)!).ToArray();
+        Assert.NotEmpty(rows); Assert.All(rows, row => Assert.Equal("You", row["speaker"]!.ToString()));
+    }
+    [Fact]
     public async Task NativeTracksNormalizeToOneTimelineWithSeparateSourceOffsets()
     {
         using var directory = new TestDirectory(); var backend = new Backend(); var (analysis, job) = Prepared(directory.Path, backend); using var owned = analysis;

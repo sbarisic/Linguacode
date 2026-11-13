@@ -170,6 +170,7 @@ public sealed partial class RecordingAnalysis : IDisposable
         var initialBytes = Store.UsedBytes();
         job.Coverage.Clear();
         var inputs = new JsonArray();
+        var microphoneOnly = false;
         if (job.SourceKind == "capture")
         {
             var snapshot = Path.Combine(Store.DirectoryFor(job.Id), "source");
@@ -188,6 +189,7 @@ public sealed partial class RecordingAnalysis : IDisposable
             if (manifest.Version == 2)
             { await PrepareTracks(job, manifest, snapshot, location: installation, space.Capacity, progress, ct); return; }
             ValidateCapture(manifest, job.Source, job.Options.AllowInterrupted);
+            microphoneOnly = manifest.Device.Kind == "microphone";
             long previous = 0;
             foreach (var chunk in manifest.Chunks)
             {
@@ -235,7 +237,9 @@ public sealed partial class RecordingAnalysis : IDisposable
         RecordingAnalysisStore.WriteJson(Store.FileFor(job.Id, "preparation.json"), decoded);
         job.Frames = decoded["frames"]!.GetValue<long>();
         if (job.Frames <= 0 || new FileInfo(normalized).Length != job.Frames * 4) throw new IOException("Invalid decoded length.");
-        job.Chunks = PlanChunks(job.Frames, job.Options.Sounds); job.Prepared = true; Store.Save(job);
+        job.Chunks = PlanChunks(job.Frames, job.Options.Sounds);
+        if (microphoneOnly) foreach (var chunk in job.Chunks) chunk.TrackId = "mic";
+        job.Prepared = true; Store.Save(job);
     }
     internal static void ValidateCapture(CaptureManifest m, string id, bool interrupted)
     {

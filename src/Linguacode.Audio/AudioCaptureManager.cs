@@ -6,7 +6,7 @@ using NAudio.Wave;
 
 namespace Linguacode.Audio;
 
-public sealed record CaptureStart(string OperationId, string? DeviceId = null, double MaxStorageGiB = 10, string? Conversation = null, string? MicrophoneId = null);
+public sealed record CaptureStart(string OperationId, string? DeviceId = null, double MaxStorageGiB = 10, string? Conversation = null, string? MicrophoneId = null, bool CaptureOutput = true);
 public sealed record CaptureSummary(string Id, string State, string Device, double DurationSeconds, long Bytes, long BudgetBytes, bool BudgetWarning, string? Error);
 
 internal sealed partial class AudioCaptureManager : IDisposable
@@ -53,10 +53,12 @@ internal sealed partial class AudioCaptureManager : IDisposable
             // Use the persisted operation ID as the capture ID: retries never start twice, even after restart.
             if (store.Ids().Contains(request.OperationId)) return Status(request.OperationId);
             if (Active is not null) throw new UserFacingException("A recording is already active. Inspect capture status.");
-            if (request.MicrophoneId is not null) return StartPair(request);
-            var devices = Devices();
-            var device = devices.SingleOrDefault(d => string.IsNullOrEmpty(request.DeviceId) ? d.Default : d.Id == request.DeviceId)
-                ?? throw new UserFacingException("Playback device is unavailable. Run Linguacode.AudioHost audio devices.");
+            if (!request.CaptureOutput && request.MicrophoneId is null) throw new UserFacingException("Enable output or microphone capture before recording.");
+            if (request.CaptureOutput && request.MicrophoneId is not null) return StartPair(request);
+            var devices = request.CaptureOutput ? Devices() : Microphones();
+            var deviceId = request.CaptureOutput ? request.DeviceId : request.MicrophoneId;
+            var device = devices.SingleOrDefault(d => string.IsNullOrEmpty(deviceId) ? d.Default : d.Id == deviceId)
+                ?? throw new UserFacingException("Selected recording device is unavailable. Run Linguacode.AudioHost audio devices.");
             var budget = checked((long)(request.MaxStorageGiB * 1024 * 1024 * 1024));
             var used = store.UsedBytes();
             if (used >= budget || FreeBytes() <= DiskReserve) throw new UserFacingException("Recording storage limit or free-disk reserve reached. Export/delete recordings or raise the limit.");
@@ -400,7 +402,7 @@ internal sealed partial class AudioCaptureManager : IDisposable
             {
                 var count = (int)Math.Min(frames, 4096); Append(buffer.AsSpan(0, count * manifest.BlockAlign)); frames -= count;
             }
-            AddCoverage(start, manifest.Frames - start, manifest.TrackId == "mic" ? "Missing" : "InferredSilence");
+            AddCoverage(start, manifest.Frames - start, manifest.Device.Kind == "microphone" ? "Missing" : "InferredSilence");
         }
         private void AddCoverage(long start, long frames, string kind)
         {

@@ -423,16 +423,16 @@ public partial class MainWindow : Window
         {
             // A shared-service capture may use different endpoints than this window's preferences.
             var capture = activeCaptureDevices?.Id == activeId ? activeCaptureDevices : null;
-            output = capture?.Tracks.FirstOrDefault(t => t.TrackId == "call")?.Device ?? capture?.Device;
-            microphone = capture?.Tracks.FirstOrDefault(t => t.TrackId == "mic")?.Device;
-            RecordingOutput.Text = "Output: " + (output?.Name ?? "Checking active recording…");
-            RecordingMicrophone.Text = "Mic: " + (microphone?.Name ?? (capture?.Version == 1 ? "Not recorded (output only)" : "Checking active recording…"));
+            output = CaptureSource(capture, "output");
+            microphone = CaptureSource(capture, "microphone");
+            RecordingOutput.Text = "Output: " + (output?.Name ?? (capture is not null ? "Not recorded" : "Checking active recording…"));
+            RecordingMicrophone.Text = "Mic: " + (microphone?.Name ?? (capture is not null ? "Not recorded" : "Checking active recording…"));
         }
         else if (Selected is { } saved)
         {
             var capture = saved.Capture;
-            RecordingOutput.Text = "Output: " + (capture.Tracks.FirstOrDefault(t => t.TrackId == "call")?.Device ?? capture.Device).Name;
-            RecordingMicrophone.Text = "Mic: " + (capture.Tracks.FirstOrDefault(t => t.TrackId == "mic")?.Device.Name ?? "Not recorded");
+            RecordingOutput.Text = "Output: " + (CaptureSource(capture, "output")?.Name ?? "Not recorded");
+            RecordingMicrophone.Text = "Mic: " + (CaptureSource(capture, "microphone")?.Name ?? "Not recorded");
         }
         else
         {
@@ -564,14 +564,14 @@ public partial class MainWindow : Window
         RecordButton.Content = Selected is not null && !capturing ? "New" : "Record";
         RecordButton.Tag = Selected is not null && !capturing ? "\uE710" : "\uE91F";
         RecordingHint.Text = capturing ? testDeadline is not null ? "Recording a short test. Stop, listen, then Keep or Delete."
-            : ownsCapture ? "Recording both tracks. Stop saves the audio without transcribing."
+            : ownsCapture ? "Recording selected sources. Stop saves the audio without transcribing."
             : "A recording is active in the shared service. Stop will finalize it."
             : busy ? "Processing your recording. You can browse saved calls while you wait."
             : OutputDevice.SelectedItem is null || MicrophoneDevice.SelectedItem is null ? "Choose your call output and microphone in Configuration before recording."
             : Selected is not null ? "Select New to prepare another recording." : "Choose a name and devices, then Record. Device choices apply only to this recording.";
         RecordButton.IsEnabled = TestButton.IsEnabled = !busy && !signingIn && activeId is null && !closing;
         StopButton.IsEnabled = activeId is not null && !busy && !closing;
-        MuteInput.IsEnabled = activeId is not null && !closing;
+        MuteInput.IsEnabled = activeId is not null && CaptureSource(activeCaptureDevices, "microphone") is not null && !closing;
         OutputDevice.IsEnabled = MicrophoneDevice.IsEnabled = !busy && activeId is null;
         var inactive = Selected is { } selected && selected.Capture.State is not ("Starting" or "Recording" or "Finalizing");
         var actions = TranscriptActions.For(Selected?.Analysis);
@@ -646,17 +646,20 @@ public partial class MainWindow : Window
         if (busy || activeId is not null) return;
         var output = (test ? OutputDevice : DraftOutput).SelectedItem as CaptureDevice;
         var microphone = (test ? MicrophoneDevice : DraftMicrophone).SelectedItem as CaptureDevice;
-        if (output is null || microphone is null) throw new UserFacingException("Select both call output and microphone before recording.");
+        var captureOutput = test || CaptureOutput.IsChecked == true;
+        var captureMicrophone = test || CaptureMicrophone.IsChecked == true;
+        if (!captureOutput && !captureMicrophone) throw new UserFacingException("Enable output or microphone capture before recording.");
+        if (captureOutput && output is null || captureMicrophone && microphone is null) throw new UserFacingException("Select a device for each enabled capture source.");
         playback?.Dispose(); playback = null;
         busy = true; SetControls();
         try
         {
             RefreshDefaultTitle();
-            var capture = await recorder.Start(TitleInput.Text, test, CancellationToken.None, output.Id, microphone.Id);
+            var capture = await recorder.Start(TitleInput.Text, test, CancellationToken.None, output?.Id, microphone?.Id, captureOutput, captureMicrophone);
             activeId = capture.Id; activeCaptureDevices = capture; ownsCapture = true; MuteInput.IsChecked = false;
             Elapsed.Text = "00:00:00"; WorkspaceTabs.SelectedItem = RecordingTab;
             testDeadline = test ? DateTimeOffset.UtcNow.AddSeconds(10) : null;
-            RefreshLibrary(capture.Id); StatusText.Text = test ? "Recording a 10-second test. Play it back, then Keep or Delete." : "Recording both tracks. Stop saves audio; transcription starts only when you choose Transcribe.";
+            RefreshLibrary(capture.Id); StatusText.Text = test ? "Recording a 10-second test. Play it back, then Keep or Delete." : "Recording selected sources. Stop saves audio; transcription starts only when you choose Transcribe.";
         }
         catch
         {
@@ -721,9 +724,9 @@ public partial class MainWindow : Window
                 var status = await recorder.CaptureStatus(id);
                 activeCaptureDevices = status; UpdateDevicePresentation();
                 Elapsed.Text = TimeSpan.FromSeconds(status.DurationSeconds).ToString(@"hh\:mm\:ss");
-                CallLevel.Value = status.Tracks.FirstOrDefault(t => t.TrackId == "call")?.Level ?? status.Level;
-                MicLevel.Value = status.Tracks.FirstOrDefault(t => t.TrackId == "mic")?.Level ?? 0;
-                MuteInput.IsChecked = status.Tracks.FirstOrDefault(t => t.TrackId == "mic")?.Muted ?? false;
+                CallLevel.Value = status.Tracks.FirstOrDefault(t => t.TrackId == "call")?.Level ?? (status.Device.Kind == "output" ? status.Level : 0);
+                MicLevel.Value = status.Tracks.FirstOrDefault(t => t.TrackId == "mic")?.Level ?? (status.Device.Kind == "microphone" ? status.Level : 0);
+                MuteInput.IsChecked = status.Tracks.FirstOrDefault(t => t.TrackId == "mic")?.Muted ?? (status.Device.Kind == "microphone" && status.Muted);
                 if (status.State is not ("Starting" or "Recording" or "Finalizing"))
                 { activeId = null; ownsCapture = false; testDeadline = null; StatusText.Text = $"Recording {status.State}. {status.Error} Resume transcription explicitly."; RefreshLibrary(id); }
                 else if (testDeadline is { } deadline && DateTimeOffset.UtcNow >= deadline && !busy) await Stop();

@@ -108,16 +108,17 @@ public sealed partial class CallRecorder : IDisposable
         // Enumeration opens no capture streams and starts no service.
         return AudioCaptureDevices.List();
     }
-    public async Task<CaptureManifest> Start(string title, bool test, CancellationToken ct, string? outputId = null, string? microphoneId = null)
+    public async Task<CaptureManifest> Start(string title, bool test, CancellationToken ct, string? outputId = null, string? microphoneId = null, bool captureOutput = true, bool captureMicrophone = true)
     {
         SavePreferences();
         outputId ??= Preferences.OutputId; microphoneId ??= Preferences.MicrophoneId;
-        if (outputId is null || microphoneId is null) throw new UserFacingException("Select both call output and microphone.");
+        if (!captureOutput && !captureMicrophone) throw new UserFacingException("Enable output or microphone capture before recording.");
+        if (captureOutput && outputId is null || captureMicrophone && microphoneId is null) throw new UserFacingException("Select a device for each enabled capture source.");
         await EnsureService(ct);
         var id = Guid.NewGuid().ToString("N");
         LastStartId = id;
         SaveMetadata(id, new() { Title = title.Trim(), Test = test, Language = Preferences.Language });
-        var request = new CaptureStart(id, outputId, Preferences.StorageGiB, MicrophoneId: microphoneId);
+        var request = new CaptureStart(id, outputId, Preferences.StorageGiB, MicrophoneId: captureMicrophone ? microphoneId : null, CaptureOutput: captureOutput);
         return (await AudioCaptureControl.Request(DataDirectory, "start", JsonSerializer.SerializeToNode(request)!.AsObject(), ct)).Deserialize<CaptureManifest>()!;
     }
     public async Task<CaptureManifest> CaptureStatus(string id, CancellationToken ct = default) =>

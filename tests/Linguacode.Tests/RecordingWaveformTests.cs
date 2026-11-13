@@ -30,6 +30,21 @@ public sealed class RecordingWaveformTests
         RecordingWaveforms.LoadAsync(directory.Path, capture, Path.Combine(directory.Path, "cache"), ct);
 
     [Fact]
+    public async Task MicrophoneOnlyWaveformUsesMicrophoneChannelAndCoverage()
+    {
+        using var d = new TestDirectory();
+        var capture = Track(d.Path, Guid.NewGuid().ToString("N"), "mic", 16000, 1,
+            (0, Enumerable.Repeat(.5f, 16000).ToArray()));
+        capture.TrackId = "";
+        capture.Device = new("mic", "Microphone", true, "microphone");
+        capture.Coverage.Add(new(0, 160, "Missing"));
+        var result = await Load(d, capture);
+        Assert.All(result.ForTrack(1), peak => Assert.Equal(0, peak.Max));
+        Assert.Contains(result.ForTrack(2), peak => peak.Max > .49f);
+        Assert.Equal(result.ForTrack(0).ToArray(), result.ForTrack(2).ToArray());
+        Assert.All(result.Coverage, gap => Assert.Equal("mic", gap.Track));
+    }
+    [Fact]
     public async Task PeaksUseAllSamplesAndTheActualPlaybackMix()
     {
         using var d = new TestDirectory(); var id = Guid.NewGuid().ToString("N");

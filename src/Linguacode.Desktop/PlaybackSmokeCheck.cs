@@ -8,6 +8,18 @@ internal static class PlaybackSmokeCheck
 {
     public static void Run(string directory, CaptureManifest fixture)
     {
+        var microphone = System.Text.Json.JsonSerializer.Deserialize<CaptureManifest>(System.Text.Json.JsonSerializer.Serialize(
+            fixture.Version == 2 ? fixture.Tracks.First(t => t.TrackId == "mic") : fixture))!;
+        microphone.Version = 1; microphone.Device = new("mic", "Microphone", true, "microphone");
+        using (var micPlayback = new CallPlayback(directory, microphone, new SilentOutput()))
+        {
+            var mixed = new byte[4096]; var isolated = new byte[4096]; var disabled = new byte[4096];
+            var length = micPlayback.Read(mixed);
+            micPlayback.Seek(0); micPlayback.Select(2);
+            if (micPlayback.Read(isolated) != length || !mixed.SequenceEqual(isolated)) throw new InvalidOperationException("Microphone-only playback lost its source selection.");
+            micPlayback.Seek(0); micPlayback.Select(1); micPlayback.Read(disabled);
+            if (disabled.Any(b => b != 0)) throw new InvalidOperationException("Disabled output played microphone audio.");
+        }
         // Deliberately ends between 48 kHz frames, as real capture clocks commonly do.
         var capture = new CaptureManifest { Version = 2, TimelineSeconds = 1.00001,
             Tracks = fixture.Version == 2 ? fixture.Tracks : [fixture] };

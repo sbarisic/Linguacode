@@ -29,7 +29,7 @@ Summary attempts retain their original agent identity. If you choose another age
 
 ## Recording controls
 
-The window starts at 1060 by 740 logical pixels. Recording uses a fixed layout; long summaries scroll inside their own panel. With a saved recording selected, **New** opens a draft. Edit its title, choose output and microphone from the inline dropdowns, then click **Record**. These device choices apply only to that capture; global defaults remain unchanged.
+The window starts at 1060 by 740 logical pixels. Recording uses a fixed layout; long summaries scroll inside their own panel. With a saved recording selected, **New** opens a draft. Edit its title, choose output and microphone from the inline dropdowns, then click **Record**. Uncheck **Output** or **Mic** beside its dropdown to skip that source entirely. At least one source must be enabled. A disabled source is not opened or recorded; this differs from muting an active microphone. These device choices apply only to that capture; global defaults remain unchanged.
 
 New recordings default to `New call — yyyy-MM-dd HH:mm:ss` using local time. The timestamp refreshes when recording starts; custom titles are preserved.
 

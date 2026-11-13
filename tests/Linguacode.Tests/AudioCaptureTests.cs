@@ -40,6 +40,36 @@ public sealed class AudioCaptureTests
         using var deadline = new CancellationTokenSource(TimeSpan.FromSeconds(10));
         while (!predicate()) await Task.Delay(10, deadline.Token);
     }
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task IndividualSourcesDoNotOpenOrRequireTheDisabledDevice(bool output)
+    {
+        using var f = new Fixture();
+        var opened = new List<string>();
+        f.Manager.Devices = () => output ? [new("speaker", "Output", true)] : throw new InvalidOperationException("Disabled output enumerated");
+        f.Manager.Microphones = () => !output ? [new("mic", "Microphone", true, "microphone")] : throw new InvalidOperationException("Disabled mic enumerated");
+        f.Manager.CreateSource = id => { opened.Add(id); return f.Source; };
+        var capture = await f.Manager.Start(new(Guid.NewGuid().ToString("N"), output ? "speaker" : null,
+            MicrophoneId: output ? null : "mic", CaptureOutput: output));
+        Assert.Equal(output ? "output" : "microphone", capture.Device.Kind);
+        Assert.Equal(new[] { output ? "speaker" : "mic" }, opened);
+        f.Source.Feed(16000, 0, f.Clock);
+        f.Clock += 10_000_000;
+        var saved = await f.Manager.Stop(capture.Id);
+        Assert.Equal("Completed", saved.State);
+        Assert.NotEmpty(saved.Chunks);
+        Assert.Empty(saved.Tracks);
+        Assert.Equal(saved.Device, f.Manager.Status(capture.Id).Device);
+    }
+    [Fact]
+    public async Task BothSourcesDisabledRejectsBeforeOpeningAnyDevice()
+    {
+        using var f = new Fixture();
+        f.Manager.CreateSource = _ => throw new InvalidOperationException("Device must not open");
+        await Assert.ThrowsAsync<Linguacode.Core.UserFacingException>(() => f.Manager.Start(new(Guid.NewGuid().ToString("N"), CaptureOutput: false)));
+        Assert.Null(f.Manager.Active);
+    }
     [Fact]
     public async Task ConcurrentStartsAreSerializedAndLostReplyRetryReturnsSameRecording()
     {

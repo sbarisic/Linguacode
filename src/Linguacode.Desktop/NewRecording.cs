@@ -6,6 +6,9 @@ namespace Linguacode.Desktop;
 
 public partial class MainWindow
 {
+    private static CaptureDevice? CaptureSource(CaptureManifest? capture, string kind) =>
+        capture?.Version == 2 ? capture.Tracks.FirstOrDefault(t => t.Device.Kind == kind)?.Device
+        : capture?.Device.Kind == kind ? capture.Device : null;
     private bool newRecordingDraft;
     private string? draftOutputId, draftMicrophoneId;
     private void BeginNewRecording()
