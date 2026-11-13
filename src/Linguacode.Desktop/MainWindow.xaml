@@ -98,9 +98,9 @@
                     <StackPanel x:Name="SavedDeviceLabels"><TextBlock x:Name="RecordingOutput" Text="Output: choose a device" FontSize="{DynamicResource Recorder.FontCaption}" TextTrimming="CharacterEllipsis" ToolTip="{Binding Text, RelativeSource={RelativeSource Self}}" Margin="0,0,0,8"/>
                     <TextBlock x:Name="RecordingMicrophone" Text="Mic: choose a device" FontSize="{DynamicResource Recorder.FontCaption}" TextTrimming="CharacterEllipsis" ToolTip="{Binding Text, RelativeSource={RelativeSource Self}}"/></StackPanel>
                     <Grid x:Name="DraftDevices" Visibility="Collapsed" MinHeight="68"><Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition/></Grid.ColumnDefinitions><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
-                      <CheckBox x:Name="CaptureOutput" Content="Output" MinWidth="0" Padding="0" IsChecked="True" VerticalAlignment="Center" Margin="0,0,8,4" ToolTip="Capture sound from the selected output"/>
+                      <CheckBox x:Name="CaptureOutput" Content="Output" MinWidth="0" Padding="6,0,0,0" IsChecked="True" VerticalAlignment="Center" VerticalContentAlignment="Center" Margin="0,0,8,4" ToolTip="Capture sound from the selected output"/>
                       <ComboBox x:Name="DraftOutput" IsEnabled="{Binding IsChecked, ElementName=CaptureOutput}" Grid.Column="1" DisplayMemberPath="Name" SelectedValuePath="Id" Margin="0,0,0,4" AutomationProperties.Name="Output for new recording"/>
-                      <CheckBox x:Name="CaptureMicrophone" Grid.Row="1" Content="Mic" MinWidth="0" Padding="0" IsChecked="True" VerticalAlignment="Center" Margin="0,0,8,0" ToolTip="Capture the selected microphone"/>
+                      <CheckBox x:Name="CaptureMicrophone" Grid.Row="1" Content="Mic" MinWidth="0" Padding="6,0,0,0" IsChecked="True" VerticalAlignment="Center" VerticalContentAlignment="Center" Margin="0,0,8,0" ToolTip="Capture the selected microphone"/>
                       <ComboBox x:Name="DraftMicrophone" IsEnabled="{Binding IsChecked, ElementName=CaptureMicrophone}" Grid.Row="1" Grid.Column="1" DisplayMemberPath="Name" SelectedValuePath="Id" AutomationProperties.Name="Microphone for new recording"/>
                     </Grid>
                   </StackPanel>
