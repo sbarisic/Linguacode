@@ -44,6 +44,10 @@ The coding-agent runtime, code-analysis tools, and AgentSmith CLI are not requir
 
 ## Verification
 
+Installed releases support prompted downloads and explicit restart through
+**Configuration → Updates**. Development builds do not self-update. See
+[manual release instructions](RELEASING.md) for local packaging and GitHub publishing.
+
 ```powershell
 dotnet test .\Linguacode.slnx -c Release
 ```

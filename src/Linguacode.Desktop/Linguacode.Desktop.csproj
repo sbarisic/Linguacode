@@ -2,16 +2,21 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType><TargetFramework>net10.0-windows</TargetFramework><UseWPF>true</UseWPF>
     <AssemblyName>Linguacode</AssemblyName><ApplicationManifest>app.manifest</ApplicationManifest>
+    <DefineConstants Condition="'$(EnableUpdateSmoke)' == 'true'">$(DefineConstants);UPDATE_SMOKE</DefineConstants>
+    <StartupObject>Linguacode.Desktop.Program</StartupObject>
     <ApplicationIcon>Assets/Linguacode.ico</ApplicationIcon>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <SelfContained>true</SelfContained>
-    <OutputPath>$(MSBuildThisFileDirectory)../../build/$(Configuration)/</OutputPath>
+    <DesktopOutputPath Condition="'$(DesktopOutputPath)' == ''">$(MSBuildThisFileDirectory)../../build/$(Configuration)/</DesktopOutputPath>
+    <OutputPath>$(DesktopOutputPath)</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
     <!-- Run the copy target even when only the audio host has changed in Visual Studio. -->
     <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="Licenses/Velopack.txt" CopyToOutputDirectory="PreserveNewest" />
+    <ProjectReference Include="../Linguacode.UpdateHost/Linguacode.UpdateHost.csproj" ReferenceOutputAssembly="false" Private="false" />
     <Resource Include="Assets/Linguacode.ico" />
     <ProjectReference Include="../Linguacode.Application/Linguacode.Application.csproj" />
     <ProjectReference Include="../Linguacode.AudioHost/Linguacode.AudioHost.csproj" ReferenceOutputAssembly="false" />
@@ -29,4 +34,5 @@
       <Output TaskParameter="CopiedFiles" ItemName="FileWrites" />
     </Copy>
   </Target>
+  <Import Project="../../eng/CopyUpdateHost.targets" />
 </Project>

@@ -12,11 +12,11 @@ internal sealed record AudioSubmission(string Generation, string Fingerprint, st
 
 public sealed record AudioServiceStatus(bool Available, string Identity, string DataDirectory, int? ProcessId,
     string Build, int Protocol, bool Draining, string Helper, int? HelperProcessId, long HelperPeakCommittedBytes,
-    int ActiveJobs, int WaitingJobs, int Clients, string? Generation, AudioReadiness Engines, string Message, CaptureSummary? Capture = null);
+    int ActiveJobs, int WaitingJobs, int Clients, string? Generation, AudioReadiness Engines, string Message, CaptureSummary? Capture = null, bool? StopAccepted = null);
 
 internal static class AudioWire
 {
-    internal const int Version = 6;
+    internal const int Version = 7;
     internal const int FrameLimit = 64 * 1024;
     internal const int ChunkSize = 32 * 1024;
     internal static string Build => typeof(AudioWire).Assembly.ManifestModule.ModuleVersionId.ToString("N");

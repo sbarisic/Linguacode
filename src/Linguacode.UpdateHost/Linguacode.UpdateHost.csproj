@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><RuntimeIdentifier>win-x64</RuntimeIdentifier><SelfContained>true</SelfContained></PropertyGroup>
+  <ItemGroup><ProjectReference Include="../Linguacode.Core/Linguacode.Core.csproj" /></ItemGroup>
+  <Target Name="GetUpdateHostFiles" Returns="@(UpdateHostFiles)"><ItemGroup><UpdateHostFiles Include="$(TargetDir)**/*" /><UpdateHostFiles Update="@(UpdateHostFiles)"><WorkerRelativePath>%(RecursiveDir)%(Filename)%(Extension)</WorkerRelativePath></UpdateHostFiles></ItemGroup></Target>
+</Project>

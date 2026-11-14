@@ -96,9 +96,9 @@ public sealed class SharedAudioServiceTests
     public async Task ConditionalStopChecksProcessIdentityAndClosesIdleServiceWithOwnersIdleConnection()
     {
         await using var f = new Fixture(); using var client = await f.Connect();
-        Assert.False((await StopIfIdle(f, -1)).Draining);
+        Assert.False((await StopIfIdle(f, -1)).StopAccepted);
         Assert.False(f.Running.IsCompleted);
-        Assert.True((await StopIfIdle(f)).Draining);
+        Assert.True((await StopIfIdle(f)).StopAccepted);
         await f.Running.WaitAsync(TimeSpan.FromSeconds(5));
     }
     [Fact]
@@ -106,7 +106,7 @@ public sealed class SharedAudioServiceTests
     {
         await using var f = new Fixture();
         using var other = await AudioConnection.Connect(AudioEndpoint.Resolve(f.Directory.Path), "control", default);
-        Assert.False((await StopIfIdle(f)).Draining);
+        Assert.False((await StopIfIdle(f)).StopAccepted);
         await Send(other, new("status"));
         Assert.True(AudioWire.Value<AudioServiceStatus>((await Read(other)).Data).Available);
     }
@@ -118,7 +118,7 @@ public sealed class SharedAudioServiceTests
         f.Host.Infer = async (_, _, _, ct) => { await release.Task.WaitAsync(ct); return Result(); };
         var work = client.Run(f.Submission(), f.Input, _ => { }, default);
         await Until(() => f.Host.Status().ActiveJobs == 1);
-        Assert.False((await StopIfIdle(f)).Draining);
+        Assert.False((await StopIfIdle(f)).StopAccepted);
         Assert.False(work.IsCompleted);
         release.SetResult(); await work;
         Assert.False(f.Host.Status().Draining);
@@ -132,7 +132,7 @@ public sealed class SharedAudioServiceTests
         capture.CreateSource = _ => new AudioCaptureTests.Source();
         capture.FreeBytes = () => 100L << 30;
         var recording = await capture.Start(new(Guid.NewGuid().ToString("N")));
-        Assert.False((await StopIfIdle(f)).Draining);
+        Assert.False((await StopIfIdle(f)).StopAccepted);
         Assert.Equal(recording.Id, capture.Active?.Id);
         Assert.Equal("Recording", capture.Status(recording.Id).State);
     }

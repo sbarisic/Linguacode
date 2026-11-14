@@ -6,6 +6,8 @@ namespace Linguacode.Desktop;
 
 public partial class App : System.Windows.Application
 {
+    internal static Linguacode.Core.InstallationActivity? Activity;
+    internal static bool IsSmokeTest;
     protected override async void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
@@ -26,6 +28,8 @@ public partial class App : System.Windows.Application
                 }
             }
             if (smoke && directory is null) throw new ArgumentException("Smoke check requires an explicit disposable --data-dir.");
+            IsSmokeTest = smoke;
+            if (Linguacode.Core.InstallationActivity.FindRoot() is { } root) Activity = Linguacode.Core.InstallationActivity.Register(root, "gui", Linguacode.Core.LinguacodePaths.DataDirectory(directory));
             var recorder = new CallRecorder(directory, executable);
             var window = new MainWindow(recorder);
             if (smoke)
@@ -37,6 +41,7 @@ public partial class App : System.Windows.Application
             }
             MainWindow = window; window.Show();
         }
+        catch (Linguacode.Core.InstallationUpdateInProgressException) { Shutdown(2); }
         catch (Exception ex)
         {
             if (e.Args.Contains("--smoke-test")) Console.Error.WriteLine(ex);
@@ -48,6 +53,7 @@ public partial class App : System.Windows.Application
     protected override void OnExit(ExitEventArgs e)
     {
         Microsoft.Win32.SystemEvents.UserPreferenceChanged -= ThemeChanged;
+        Activity?.Dispose(); Activity = null;
         base.OnExit(e);
     }
 }

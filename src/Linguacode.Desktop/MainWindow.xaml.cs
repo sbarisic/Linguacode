@@ -42,6 +42,7 @@ public partial class MainWindow : Window
     public MainWindow(CallRecorder recorder)
     {
         this.recorder = recorder; InitializeComponent();
+        InitializeUpdates();
         MinWidth = Math.Min(MinWidth, SystemParameters.WorkArea.Width); MinHeight = Math.Min(MinHeight, SystemParameters.WorkArea.Height);
         Width = Math.Min(Width, SystemParameters.WorkArea.Width); Height = Math.Min(Height, SystemParameters.WorkArea.Height);
         InitializeAgentSettings();
@@ -122,6 +123,7 @@ public partial class MainWindow : Window
         if (preparationCalls != 1) throw new InvalidOperationException("Ready transcription unnecessarily reran setup.");
         await CheckAutomaticSetupRecovery();
         await CheckAgentSettings();
+        await CheckUpdateControls();
         await CheckRecorderPolish();
         await CheckManualTranscription();
         PresentationSmokeCheck.Run();
@@ -932,6 +934,7 @@ public partial class MainWindow : Window
     private async void OnClosing(object? sender, CancelEventArgs e)
     {
         if (closingAllowed) return;
+        if (updateApplying) { e.Cancel = true; return; }
         agentCancellation?.Cancel();
         if (!closing && !busy && work is null && !(activeId is not null && ownsCapture) && !recorder.HasOwnedService)
         {

@@ -429,3 +429,7 @@ FodyWeavers.xsd
 # Disposable test evidence
 **/__pycache__/
 *.pyc
+
+# Local release packages and chat attachments
+/artifacts/releases/
+/.codex-attachments/

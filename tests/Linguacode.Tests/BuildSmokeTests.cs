@@ -20,7 +20,7 @@ public sealed class BuildSmokeTests
 #else
         const string configuration = "Release";
 #endif
-        var build = Path.Combine(root.FullName, "build", configuration);
+        var build = Environment.GetEnvironmentVariable("LINGUACODE_TEST_BUILD_DIR") ?? Path.Combine(root.FullName, "build", configuration);
         using var directory = new TestDirectory(); var capture = Fixture(directory.Path);
         async Task<string> Run(string executable, params string[] arguments)
         {

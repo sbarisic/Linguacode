@@ -12,6 +12,18 @@ namespace Linguacode.Audio;
 /// <summary>Read-only service management and explicit process lifecycle; no model or account initialization.</summary>
 public static class AudioServiceControl
 {
+    public static async Task<bool> StopIfIdle(string dataDirectory, int expectedProcessId, CancellationToken ct = default)
+    {
+        Process process;
+        try { process = Process.GetProcessById(expectedProcessId); }
+        catch (ArgumentException) { return true; }
+        using (process)
+        {
+            var status = await Exchange(AudioEndpoint.Resolve(dataDirectory), false, false, ct, expectedProcessId);
+            if (status.ProcessId != expectedProcessId || status.StopAccepted != true) return false;
+            await process.WaitForExitAsync(ct); return true;
+        }
+    }
     public static async Task<AudioServiceStatus> Status(string dataDirectory, CancellationToken ct = default)
     {
         var endpoint = AudioEndpoint.Resolve(dataDirectory);

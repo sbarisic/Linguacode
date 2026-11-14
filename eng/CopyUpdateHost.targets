@@ -1,0 +1,8 @@
+<Project>
+  <Target Name="IncludeUpdateHost" BeforeTargets="GetCopyToOutputDirectoryItems" Condition="'$(DesignTimeBuild)' != 'true'">
+    <MSBuild Projects="$(MSBuildThisFileDirectory)../src/Linguacode.UpdateHost/Linguacode.UpdateHost.csproj" Targets="GetUpdateHostFiles" Properties="Configuration=$(Configuration);Platform=$(Platform)">
+      <Output TaskParameter="TargetOutputs" ItemName="UpdateHostFiles" />
+    </MSBuild>
+    <ItemGroup><ContentWithTargetPath Include="@(UpdateHostFiles)" TargetPath="UpdateHost/%(UpdateHostFiles.WorkerRelativePath)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" /></ItemGroup>
+  </Target>
+</Project>

@@ -18,6 +18,7 @@ Console.CancelKeyPress += (_, e) => { e.Cancel = true; cancel.Cancel(); };
 void Write(string type, object payload) => Console.WriteLine(json ? Json.Serialize(new { schemaVersion = 1, type, payload }) : Json.Serialize(payload));
 try
 {
+    using var installationActivity = InstallationActivity.FindRoot() is { } root ? InstallationActivity.Register(root, words is ["service", "run"] ? "audio-service" : "audio-command", directory) : null;
     if (words is ["service", "run"])
     {
         await new AudioServiceHost(directory).Run(cancel.Token);

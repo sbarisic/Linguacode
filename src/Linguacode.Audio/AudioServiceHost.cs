@@ -338,7 +338,7 @@ public sealed partial class AudioServiceHost
                                         !(p.inference && p.process == pid));
                                 if (stop) { host.idleExit = true; host.draining = true; }
                             }
-                            try { await Send(new("status", message.Id, AudioWire.Data(host.Status())), Closed.Token); }
+                            try { await Send(new("status", message.Id, AudioWire.Data(host.Status() with { StopAccepted = stop })), Closed.Token); }
                             finally { if (stop) host.Stop(false); }
                             return;
                         }

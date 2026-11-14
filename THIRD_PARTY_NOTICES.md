@@ -1,4 +1,8 @@
-# Native audio dependencies
+# Third-party dependencies
+
+Application updates use Velopack 1.2.161 (MIT): https://github.com/velopack/velopack.
+The SDK and local packaging tool are pinned to the same version. Its license is
+included in the desktop output under `Licenses/Velopack.txt`.
 
 The app runs native audio processing locally on Windows x64. Model files download
 at setup; native libraries ship in `AudioWorker`.
