@@ -9,7 +9,7 @@ Close development copies of the app. Commit all tracked changes on `main`, write
 release notes, then run from the repository:
 
 ```powershell
-dotnet run --project tools/Linguacode.Release -- 0.1.0 path/to/release-notes.md
+.\eng\Release.ps1 -Version 0.1.0 -ReleaseNotes path/to/release-notes.md
 ```
 
 The command restores the pinned packaging tool, rebuilds the solution into fresh
@@ -17,6 +17,10 @@ staging, runs the automated suite, and packages the complete self-contained app.
 Optional model tests are excluded from this release command; run model acceptance
 separately when changing the engines. Files are written to
 `artifacts/releases/<version>`. Nothing is uploaded, tagged, pushed, or published.
+
+Use this script rather than `dotnet run`: the latter puts child processes in a
+Windows job that prevents the audio-service smoke test from starting its detached
+service. The script builds the release tool and executes its DLL directly.
 
 Versions must be stable `major.minor.patch` values. The command rejects dirty
 tracked changes, another branch, an existing local tag, and an existing output

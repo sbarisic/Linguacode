@@ -6,7 +6,7 @@ using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 
 if (args.Length != 2 || !Regex.IsMatch(args[0], @"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$"))
-{ Console.Error.WriteLine("Usage: dotnet run --project tools/Linguacode.Release -- <major.minor.patch> <release-notes.md>"); return 2; }
+{ Console.Error.WriteLine("Usage: .\\eng\\Release.ps1 -Version <major.minor.patch> -ReleaseNotes <release-notes.md>"); return 2; }
 var root = new DirectoryInfo(Environment.CurrentDirectory);
 while (root is not null && !File.Exists(Path.Combine(root.FullName, "Linguacode.slnx"))) root = root.Parent;
 if (root is null) throw new IOException("Run from the Linguacode checkout.");
