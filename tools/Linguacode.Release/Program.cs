@@ -15,15 +15,16 @@ if (!File.Exists(notes) || new FileInfo(notes).Length == 0) throw new IOExceptio
 async Task<string> Run(string executable, IEnumerable<string> arguments, bool capture = false, string? buildDirectory = null)
 {
     var start = new ProcessStartInfo(executable) { WorkingDirectory = root.FullName, UseShellExecute = false, CreateNoWindow = true,
-        RedirectStandardOutput = capture, RedirectStandardError = capture };
+        RedirectStandardOutput = true, RedirectStandardError = true };
     foreach (var arg in arguments) start.ArgumentList.Add(arg);
     if (buildDirectory is not null) start.Environment["LINGUACODE_TEST_BUILD_DIR"] = buildDirectory;
     start.Environment.Remove("LINGUACODE_NATIVE_TEST_DATA");
     using var process = Process.Start(start) ?? throw new IOException("Could not start " + executable);
-    var output = capture ? process.StandardOutput.ReadToEndAsync() : Task.FromResult("");
-    var error = capture ? process.StandardError.ReadToEndAsync() : Task.FromResult("");
+    var output = process.StandardOutput.ReadToEndAsync();
+    var error = process.StandardError.ReadToEndAsync();
     await process.WaitForExitAsync();
-    if (process.ExitCode != 0) throw new IOException(executable + " failed: " + await error);
+    if (!capture) { Console.Write(await output); Console.Error.Write(await error); }
+    if (process.ExitCode != 0) throw new IOException(executable + " failed (exit " + process.ExitCode + "): " + await output + await error);
     return (await output).Trim();
 }
 if (await Run("git", ["branch", "--show-current"], true) != "main") throw new IOException("Release packaging requires main.");
