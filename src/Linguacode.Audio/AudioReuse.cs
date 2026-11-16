@@ -22,7 +22,7 @@ internal static class AudioReuse
                 ["path"] = Path.GetFullPath(path).ToUpperInvariant(), ["sourceHash"] = hash,
                 ["start"] = args["startSeconds"]!.DeepClone(), ["duration"] = args["durationSeconds"]!.DeepClone(),
                 ["normalization"] = 1, ["fingerprint"] = version, ["component"] = component,
-                ["settings"] = component == "transcription" ? "words-v1;alignment-v1;language=" + (args["language"]?.ToString() ?? "auto") : component == "diarization" ? "auto;threshold=.5;on=.3;off=.5" : "yamnet-full-v1"
+                ["settings"] = component == "transcription" ? "words-v2;alignment-v1;language=" + (args["language"]?.ToString() ?? "auto") : component == "diarization" ? "auto;threshold=.5;on=.3;off=.5" : "yamnet-full-v1"
             }.ToJsonString()));
         return keys;
     }
@@ -48,6 +48,10 @@ internal static class AudioReuse
     {
         if (result["transcription"] is not JsonObject transcript) return;
         transcript.Remove("speakerSegments");
+        if (transcript["segments"] is JsonArray originalSegments)
+            foreach (var segment in originalSegments.OfType<JsonObject>())
+                if (segment["words"] is JsonArray originalWords && segment["text"] is JsonValue text &&
+                    !TranscriptText.RestoreWords(text.GetValue<string>(), originalWords)) segment.Remove("words");
         if (result["diarization"]?["status"]?.ToString() != "succeeded" || result["diarization"]?["turns"] is not JsonArray turns || transcript["segments"] is not JsonArray segments) return;
         var aligned = new JsonArray();
         foreach (var segment in segments)

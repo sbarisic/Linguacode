@@ -4,6 +4,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="../Linguacode.Core/Linguacode.Core.csproj" />
     <Content Include="licenses/*;../../THIRD_PARTY_NOTICES.md" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <PackageReference Include="Whisper.net" /><PackageReference Include="Whisper.net.Runtime" />
     <PackageReference Include="org.k2fsa.sherpa.onnx" /><PackageReference Include="FFmpeg.AutoGen" />

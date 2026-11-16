@@ -14,6 +14,7 @@ public sealed class RecordingAnalysisTests
         public bool Disconnect;
         public bool FailSpeakers;
         public bool ManySegments;
+        public bool SplitUnicode;
         public List<string[]> Components = [];
         public AudioReadiness Status(string data) => new(true, true, data, "fake", true);
         public Task<JsonObject> Run(string installation, JsonObject request, Action<string> progress, CancellationToken cancellation)
@@ -25,6 +26,13 @@ public sealed class RecordingAnalysisTests
                 """)!.AsObject().Also(r =>
                 {
                     if (FailSpeakers) r["diarization"] = new JsonObject { ["status"] = "failed", ["error"] = "fixture" };
+                    if (SplitUnicode)
+                    {
+                        var segment = r["transcription"]!["segments"]![0]!;
+                        segment["text"] = "Čekaj, dođi.";
+                        segment["words"]![0]!["text"] = " ��ekaj,";
+                        segment["words"]![1]!["text"] = " do��i.";
+                    }
                     if (ManySegments) r["transcription"]!["segments"] = new JsonArray(Enumerable.Range(0, 60).Select(i => (JsonNode)new JsonObject { ["startSeconds"] = i + 1, ["endSeconds"] = i + 2, ["text"] = new string('a', 500) + i }).ToArray());
                 }));
         }
@@ -41,6 +49,26 @@ public sealed class RecordingAnalysisTests
         var normalized = analysis.Store.FileFor(job.Id, "normalized.f32"); using (var file = File.Create(normalized)) file.SetLength(job.Frames * 4);
         RecordingAnalysisStore.WriteJson(analysis.Store.FileFor(job.Id, "preparation.json"), new { hash = RecordingAnalysisStore.Hash(normalized) }); analysis.Store.Save(job);
         return (analysis, job);
+    }
+    [Fact]
+    public async Task UnicodeSurvivesAssemblyAndTextSubtitleAndJsonExports()
+    {
+        using var directory = new TestDirectory(); var backend = new Backend { SplitUnicode = true };
+        var (analysis, job) = Prepared(directory.Path, backend, 10); using var owned = analysis;
+        await analysis.Run(job.Id, false, false, _ => { }, null, null, default);
+        var row = Assert.Single(RecordingAnalysis.Rows(analysis.Store.FileFor(job.Id, "transcript.jsonl")));
+        Assert.Equal("Čekaj, dođi.", row["text"]!.ToString());
+        Assert.Equal(1d, row["startSeconds"]!.GetValue<double>());
+        Assert.Equal(2d, row["endSeconds"]!.GetValue<double>());
+        Assert.Equal("Speaker 1", row["speaker"]!.ToString());
+        var destination = Path.Combine(directory.Path, "export"); analysis.Export(job.Id, destination);
+        foreach (var name in new[] { "transcript.txt", "transcript.srt" })
+        {
+            var exported = File.ReadAllText(Path.Combine(destination, name));
+            Assert.Contains("Čekaj, dođi.", exported);
+            Assert.DoesNotContain('\uFFFD', exported);
+        }
+        Assert.Equal("Čekaj, dođi.", Assert.Single(RecordingAnalysis.Rows(Path.Combine(destination, "transcript.jsonl")))["text"]!.ToString());
     }
     [Fact]
     public void ChunkPlanCoversEveryFrameOnceAndBoundsContext()

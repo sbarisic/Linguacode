@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Text.Json.Nodes;
 using Whisper.net;
 using SherpaOnnx;
+using Linguacode.Core;
 
 namespace Linguacode.AudioWorker;
 
@@ -50,8 +51,12 @@ internal sealed class SpeechEngines(string root) : IDisposable
                 var from = Math.Clamp(segment.Start.TotalSeconds, 0, duration); var to = Math.Clamp(segment.End.TotalSeconds, from, duration);
                 if (string.IsNullOrWhiteSpace(segment.Text) || to <= from) continue;
                 var words = Words(segment.Tokens, baseTime, from, to);
-                segments.Add(new JsonObject { ["startSeconds"] = baseTime + from, ["endSeconds"] = baseTime + to,
-                    ["text"] = segment.Text.Trim(), ["words"] = words });
+                var row = new JsonObject { ["startSeconds"] = baseTime + from, ["endSeconds"] = baseTime + to,
+                    ["text"] = segment.Text.Trim() };
+                // If fragments cannot be matched losslessly, keep the intact segment
+                // rather than publishing corrupt text or inventing word boundaries.
+                if (words.Count > 0 && TranscriptText.RestoreWords(segment.Text, words)) row["words"] = words;
+                segments.Add(row);
             }
         }
         result["noSpeech"] = segments.Count == 0;
